@@ -13,38 +13,19 @@ import android.os.RemoteException;
 
 import com.payzone.transaction.client.handlers.MessageResponseHandler;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ApiClient extends Handler {
     /**
      * Messenger for communicating with the service.
      */
-    Messenger mService = null;
-    Context ctx = null;
-    public MessageResponseHandler messageResponseHandler = new MessageResponseHandler();
-    public Messenger replyMessenger = new Messenger(messageResponseHandler);
+    Messenger mService;
+    Context ctx;
+    public MessageResponseHandler messageResponseHandler;
+    public Messenger replyMessenger;
     //boolean variable to keep a check on service bind and unbind event
     public boolean mBound = false;
-    private ServiceConnection mConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            // This is called when the connection with the service has been
-            // established, giving us the object we can use to
-            // interact with the service.  We are communicating with the
-            // service using a Messenger, so here we get a client-side
-            // representation of that from the raw IBinder object.
-            mService = new Messenger(service);
-            mBound = true;
-            System.out.println("## Service Connection Established...");
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
-            mService = null;
-            mBound = false;
-        }
-    };
+    private ServiceConnection mConnection;
 
     public boolean registerDevice(JSONObject registerJsonObj) {
         return postDelayed(new Runnable() {
@@ -54,13 +35,12 @@ public class ApiClient extends Handler {
                     return;
                 }
                 // Create and send a message to the service, using a supported 'what' value
-                Message msg = Message.obtain(null, MessageCommands.MSG_REGISTER_DEVICE, 0, 0);
+                Message msg = Message.obtain(null, MessageConstants.MSG_REGISTER_DEVICE, 0, 0);
                 msg.replyTo = replyMessenger;
                 try {
                     Bundle data = new Bundle();
-                    data.putString("registerParams", registerJsonObj.toString());
+                    data.putString(MessageConstants.RESP_REGISTER_DEVICE, registerJsonObj.toString());
                     msg.setData(data);
-                    messageResponseHandler.responseObject = null;
                     mService.send(msg);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -87,7 +67,33 @@ public class ApiClient extends Handler {
         return true;
     }
 
-    public ApiClient(Context ctx) {
+    public ApiClient(Context ctx, Messenger messenger) {
         this.ctx = ctx;
+        if(messenger != null) {
+            this.replyMessenger = messenger;
+        } else { // Use Default MessageResponseHandler from Library
+            this.messageResponseHandler = new MessageResponseHandler();
+            this.replyMessenger = new Messenger(messageResponseHandler);
+        }
+
+        this.mConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                // This is called when the connection with the service has been
+                // established, giving us the object we can use to
+                // interact with the service.  We are communicating with the
+                // service using a Messenger, so here we get a client-side
+                // representation of that from the raw IBinder object.
+                mService = new Messenger(service);
+                mBound = true;
+                System.out.println("## Service Connection Established...");
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                // This is called when the connection with the service has been
+                // unexpectedly disconnected -- that is, its process crashed.
+                mService = null;
+                mBound = false;
+            }
+        };
     }
 }
