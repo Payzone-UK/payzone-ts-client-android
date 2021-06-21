@@ -28,31 +28,6 @@ public class ApiClient extends Handler {
     public boolean mBound = false;
     private ServiceConnection mConnection;
 
-    public boolean registerDevice(JSONObject jsonParams) throws JSONException {
-        JSONObject registerJsonObj = new JSONObject();
-        registerJsonObj.put("terminal", jsonParams);
-        return postDelayed(new Runnable() {
-            public void run() {
-                System.out.println("## MBOUND is: " + mBound);
-                if (!mBound) {
-                    return;
-                }
-                // Create and send a message to the service, using a supported 'what' value
-                Message msg = Message.obtain(null, MessageConstants.MSG_REGISTER_DEVICE, 0, 0);
-                msg.replyTo = replyMessenger;
-                try {
-                    Bundle data = new Bundle();
-                    data.putString(MessageConstants.RESP_REGISTER_DEVICE, registerJsonObj.toString());
-                    msg.setData(data);
-                    mService.send(msg);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    return;
-                }
-            }
-        }, 3000);
-    }
-
     public void initService() {
         Intent intent = new Intent();
         intent.setComponent(
@@ -98,5 +73,80 @@ public class ApiClient extends Handler {
                 mBound = false;
             }
         };
+    }
+
+    public boolean registerDevice(JSONObject jsonParams) throws JSONException {
+        JSONObject registerJsonObj = new JSONObject();
+        registerJsonObj.put("terminal", jsonParams);
+        return sendMessage(
+                MessageConstants.MSG_REGISTER_DEVICE,
+                MessageConstants.RESP_REGISTER_DEVICE,
+                registerJsonObj.toString()
+        );
+    }
+
+    public boolean initTransaction(JSONObject jsonParams) throws JSONException {
+        JSONObject purchaseJsonObj = new JSONObject();
+        purchaseJsonObj.put("purchase", jsonParams);
+        return sendMessage(
+                MessageConstants.MSG_INIT_TRANSACTION,
+                MessageConstants.RESP_INIT_TRANSACTION,
+                purchaseJsonObj.toString()
+        );
+    }
+
+    public boolean completeTransaction(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_COMPLETE_TRANS,
+                MessageConstants.RESP_COMPLETE_TRANS,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean markTransactionSuccess(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_MARK_TRANS_SUCCESS,
+                MessageConstants.RESP_MARK_TRANS_SUCCESS,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean markTransactionFailed(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_MARK_TRANS_FAILED,
+                MessageConstants.RESP_MARK_TRANS_FAILED,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean markReceiptPrinted(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_MARK_RECEIPT_PRINTED,
+                MessageConstants.RESP_MARK_RECEIPT_PRINTED,
+                jsonParams.toString()
+        );
+    }
+
+    private boolean sendMessage(int request, String responseKey, String payload) {
+        return postDelayed(new Runnable() {
+            public void run() {
+                System.out.println("## MBOUND is: " + mBound);
+                if (!mBound) {
+                    throw new RuntimeException("No Bindings with Transaction service.");
+                }
+                // Create and send a message to the service, using a supported 'what' value
+                Message msg = Message.obtain(null, request, 0, 0);
+                msg.replyTo = replyMessenger;
+                try {
+                    Bundle data = new Bundle();
+                    data.putString(responseKey, payload);
+                    msg.setData(data);
+                    mService.send(msg);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        }, 3000);
     }
 }

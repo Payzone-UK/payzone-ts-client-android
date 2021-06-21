@@ -20,6 +20,10 @@ public class MessageResponseHandler extends Handler {
                 response = msg.getData().getString(MessageConstants.RESP_INIT_TRANSACTION);
                 System.out.println("## Transaction Initialised Response = "+response);
                 break;
+            case MessageConstants.MSG_COMPLETE_TRANS:
+                response = msg.getData().getString(MessageConstants.RESP_COMPLETE_TRANS);
+                System.out.println("## Transaction Compleeted Response = "+response);
+                break;
             case MessageConstants.MSG_MARK_TRANS_SUCCESS:
                 response = msg.getData().getString(MessageConstants.RESP_MARK_TRANS_SUCCESS);
                 System.out.println("## Marked Successful Response = "+response);
