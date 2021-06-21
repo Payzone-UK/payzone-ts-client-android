@@ -13,6 +13,7 @@ import android.os.RemoteException;
 
 import com.payzone.transaction.client.handlers.MessageResponseHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ApiClient extends Handler {
@@ -27,7 +28,9 @@ public class ApiClient extends Handler {
     public boolean mBound = false;
     private ServiceConnection mConnection;
 
-    public boolean registerDevice(JSONObject registerJsonObj) {
+    public boolean registerDevice(JSONObject jsonParams) throws JSONException {
+        JSONObject registerJsonObj = new JSONObject();
+        registerJsonObj.put("terminal", jsonParams);
         return postDelayed(new Runnable() {
             public void run() {
                 System.out.println("## MBOUND is: " + mBound);
