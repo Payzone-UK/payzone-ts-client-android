@@ -47,7 +47,7 @@ public class ApiClient extends Handler {
                     return;
                 }
             }
-        }, 1000);
+        }, 3000);
     }
 
     public void initService() {
