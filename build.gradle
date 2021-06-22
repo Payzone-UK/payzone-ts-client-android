@@ -61,7 +61,7 @@ dependencies {
 def githubProperties = new Properties()
 githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
 def getVersionName = { ->
-    return "1.0.0"  // Replace with version Name
+    return "0.0.3"  // Replace with version Name
 }
 def getArtificatId = { ->
     return "payzone-ts-client-android" // Replace with library name ID

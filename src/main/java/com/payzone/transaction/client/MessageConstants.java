@@ -16,4 +16,5 @@ public class MessageConstants {
     public static final String RESP_MARK_TRANS_SUCCESS = "markTransSuccess";
     public static final String RESP_MARK_TRANS_FAILED = "markTransFailed";
     public static final String RESP_MARK_RECEIPT_PRINTED = "markReceiptPrinted";
+    public static final String PARAM_SPLITTER_REGEX = "--@--";
 }

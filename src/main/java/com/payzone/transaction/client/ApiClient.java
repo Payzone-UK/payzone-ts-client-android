@@ -28,23 +28,6 @@ public class ApiClient extends Handler {
     public boolean mBound = false;
     private ServiceConnection mConnection;
 
-    public void initService() {
-        Intent intent = new Intent();
-        intent.setComponent(
-                new ComponentName("com.payzone.transaction",
-                        "com.payzone.transaction.services.TransactionService"));
-        boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        System.out.println("## bindResult is: "+ bindResult);
-    }
-
-    public boolean destroyService(){
-        if (mBound) {
-            ctx.unbindService(mConnection);
-            mBound = false;
-        }
-        return true;
-    }
-
     public ApiClient(Context ctx, Messenger messenger) {
         this.ctx = ctx;
         if(messenger != null) {
@@ -73,6 +56,23 @@ public class ApiClient extends Handler {
                 mBound = false;
             }
         };
+    }
+
+    public void initService() {
+        Intent intent = new Intent();
+        intent.setComponent(
+                new ComponentName("com.payzone.transaction",
+                        "com.payzone.transaction.services.TransactionService"));
+        boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        System.out.println("## bindResult is: "+ bindResult);
+    }
+
+    public boolean destroyService(){
+        if (mBound) {
+            ctx.unbindService(mConnection);
+            mBound = false;
+        }
+        return true;
     }
 
     public boolean registerDevice(JSONObject jsonParams) throws JSONException {
@@ -139,7 +139,9 @@ public class ApiClient extends Handler {
                 msg.replyTo = replyMessenger;
                 try {
                     Bundle data = new Bundle();
+                    data.putString("responseKey", responseKey);
                     data.putString(responseKey, payload);
+                    data.putString("packageName", ctx.getPackageName());
                     msg.setData(data);
                     mService.send(msg);
                 } catch (RemoteException e) {
