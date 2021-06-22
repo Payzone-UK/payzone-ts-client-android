@@ -127,6 +127,22 @@ public class ApiClient extends Handler {
         );
     }
 
+    public boolean getToken(JSONObject jsonParams) throws JSONException {
+        return sendMessage(
+                MessageConstants.MSG_GET_TOKEN,
+                MessageConstants.RESP_GET_TOKEN,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean getSession(JSONObject jsonParams) throws JSONException {
+        return sendMessage(
+                MessageConstants.MSG_GET_SESSION,
+                MessageConstants.RESP_GET_SESSION,
+                jsonParams.toString()
+        );
+    }
+
     private boolean sendMessage(int request, String responseKey, String payload) {
         return postDelayed(new Runnable() {
             public void run() {
