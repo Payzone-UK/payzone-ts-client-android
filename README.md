@@ -60,10 +60,10 @@ This is the client library for interacting with the Payzone Transaction Service 
   <summary> initService - Initialise the ApiClient class in your activity onStart method</summary>
   <br>
 
-The ApiClient class constructor params are:
+    The ApiClient class constructor params are:
 
-- Your activity context.
-- Reply Messenger created using your Response handler.
+    - Your activity context.
+    - Reply Messenger created using your Response handler.
 
 
     @Override
