@@ -1,0 +1,97 @@
+package com.payzone.transaction.client;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+
+import android.test.mock.MockContext;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.junit.BeforeClass;
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+public class ApiClientUnitTest {
+    static ApiClient apiClient;
+    static Context appContext;
+    static MockContext mContext;
+
+    @BeforeClass
+    public static void testSetup() throws PackageManager.NameNotFoundException {
+        mContext = mock(MockContext.class);
+        when(mContext.getPackageName()).thenReturn("com.payzone.transaction.client.test");
+
+//        appContext = mContext.createPackageContext("com.payzone.transaction.client.test", 0);
+//        appContext = new MockContext() {
+//
+//            @Override
+//            public String getPackageName(){
+//                return "com.payzone.transaction.client.test";
+//            }
+//        };
+
+        apiClient = new ApiClient(mContext, null);
+        apiClient.initService();
+    }
+
+    @Test
+    public void serviceBindingDone() {
+        assertEquals(false, apiClient.mBound);
+    }
+
+    @Test
+    public void useAppContext() {
+        assertEquals("com.payzone.transaction.client.test", mContext.getPackageName());
+    }
+
+    @Test
+    public void registerDevice() throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("barcode", "267693243349691");
+        obj.put("deviceId", "1545D2053");
+        obj.put("tId", "49691");
+        assertEquals(false, apiClient.registerDevice(obj));
+    }
+
+    @Test
+    public void initTransaction() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.initTransaction(obj));
+    }
+
+    @Test
+    public void completeTransaction() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.completeTransaction(obj));
+    }
+
+    @Test
+    public void markTransactionSuccess() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.markTransactionSuccess(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.markTransactionSuccess(null);});
+    }
+
+    @Test
+    public void markTransactionFailed() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.markTransactionFailed(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.markTransactionFailed(null);});
+    }
+
+    @Test
+    public void markReceiptPrinted() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.markReceiptPrinted(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.markReceiptPrinted(null);});
+    }
+}
