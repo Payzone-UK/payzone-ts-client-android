@@ -124,7 +124,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 <hr/>
 
 <details>
-  <summary>initTransaction - Intialise a transaction on Payzone Network </summary>
+  <summary>initTransaction - Initialise a transaction on Payzone Network </summary>
   <br>
 
 
