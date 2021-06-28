@@ -115,7 +115,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 
 
     JSONObject obj = new JSONObject();
-    obj.put("pin", 0000);
+    obj.put("pin", 1234);
     boolean success =  apiClient.startSession(obj);
     System.out.println("## Get Session Request sent to service queue: "+success);
 
