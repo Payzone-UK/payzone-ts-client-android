@@ -110,7 +110,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 <hr/>
 
 <details>
-  <summary>startSession - get Session </summary>
+  <summary>startSession - Login / Start a new session </summary>
   <br>
 
 
