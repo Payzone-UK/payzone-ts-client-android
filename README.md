@@ -8,7 +8,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 - destroyService
 - registerDevice
 - getToken
-- getSession
+- startSession
 - initTransaction
 - completeTransaction
 - markTransactionSuccess
@@ -110,13 +110,13 @@ This is the client library for interacting with the Payzone Transaction Service 
 <hr/>
 
 <details>
-  <summary>getSession - get Session </summary>
+  <summary>startSession - get Session </summary>
   <br>
 
 
     JSONObject obj = new JSONObject();
     obj.put("pin", 0000);
-    boolean success =  apiClient.getSession(obj);
+    boolean success =  apiClient.startSession(obj);
     System.out.println("## Get Session Request sent to service queue: "+success);
 
 

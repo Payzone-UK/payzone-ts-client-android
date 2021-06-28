@@ -9,7 +9,7 @@ public class MessageConstants {
     public static final int MSG_MARK_TRANS_FAILED = 5;
     public static final int MSG_MARK_RECEIPT_PRINTED = 6;
     public static final int MSG_GET_TOKEN = 7;
-    public static final int MSG_GET_SESSION = 8;
+    public static final int MSG_START_SESSION = 8;
 
     // Parameter KEYS FOR
     public static final String RESP_REGISTER_DEVICE = "registerDevice";
@@ -19,5 +19,5 @@ public class MessageConstants {
     public static final String RESP_MARK_TRANS_FAILED = "markTransFailed";
     public static final String RESP_MARK_RECEIPT_PRINTED = "markReceiptPrinted";
     public static final String RESP_GET_TOKEN = "getToken";
-    public static final String RESP_GET_SESSION = "getSession";
+    public static final String RESP_START_SESSION = "startSession";
 }

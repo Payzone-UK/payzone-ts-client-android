@@ -135,10 +135,10 @@ public class ApiClient extends Handler {
         );
     }
 
-    public boolean getSession(JSONObject jsonParams) throws JSONException {
+    public boolean startSession(JSONObject jsonParams) throws JSONException {
         return sendMessage(
-                MessageConstants.MSG_GET_SESSION,
-                MessageConstants.RESP_GET_SESSION,
+                MessageConstants.MSG_START_SESSION,
+                MessageConstants.RESP_START_SESSION,
                 jsonParams.toString()
         );
     }

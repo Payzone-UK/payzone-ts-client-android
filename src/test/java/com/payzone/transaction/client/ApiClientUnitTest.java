@@ -63,6 +63,20 @@ public class ApiClientUnitTest {
     }
 
     @Test
+    public void getToken() throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("tId", "49691");
+        assertEquals(false, apiClient.getToken(obj));
+    }
+
+    @Test
+    public void startSession() throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("pin", 1234);
+        assertEquals(false, apiClient.startSession(obj));
+    }
+
+    @Test
     public void initTransaction() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.initTransaction(obj));
