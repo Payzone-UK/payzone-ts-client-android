@@ -129,9 +129,8 @@ This is the client library for interacting with the Payzone Transaction Service 
 
 
     JSONObject obj = new JSONObject();
-    obj.put("transactionSource", 0);
+    obj.put("clientRef", "294decdf-0d8d-4bc5-9921-7460ab737fba");
     obj.put("transactionGuid", "bfd0f250-66ce-11eb-863b-a5942ff6aec7");
-    obj.put("productId", "3789");
     obj.put("transactionAmount", 1000);
     obj.put("barcode", "63385450042016567880");
     boolean success =  apiClient.initTransaction(obj);
