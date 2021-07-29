@@ -143,6 +143,17 @@ public class ApiClient extends Handler {
         );
     }
 
+    public boolean storeCashierId(String cashierId) {
+        if (cashierId == null) {
+            throw new NullPointerException();
+        }
+        return sendMessage(
+                MessageConstants.MSG_STORE_CID,
+                MessageConstants.RESP_STORE_CID,
+                cashierId
+        );
+    }
+
     private boolean sendMessage(int request, String responseKey, String payload) {
         return postDelayed(new Runnable() {
             public void run() {

@@ -9,6 +9,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 - registerDevice
 - getToken
 - startSession
+- storeCashierId
 - initTransaction
 - completeTransaction
 - markTransactionSuccess
@@ -118,6 +119,19 @@ This is the client library for interacting with the Payzone Transaction Service 
     obj.put("pin", 1234);
     boolean success =  apiClient.startSession(obj);
     System.out.println("## Get Session Request sent to service queue: "+success);
+
+
+</details>
+<hr/>
+
+<details>
+  <summary>storeCashierId - Manually send your cashier ID to the Payzone Transaction Service before you can start transacting. Mostly for pre-registered terminals/devices </summary>
+  <br>
+
+
+    String cashierId = "1234";
+    boolean success =  apiClient.storeCashierId(cashierId);
+    System.out.println("## Get Store Cashier sent to service queue: "+success);
 
 
 </details>

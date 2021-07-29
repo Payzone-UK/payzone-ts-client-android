@@ -108,4 +108,10 @@ public class ApiClientUnitTest {
         assertEquals(false, apiClient.markReceiptPrinted(obj));
         assertThrows(NullPointerException.class, () -> { apiClient.markReceiptPrinted(null);});
     }
+
+    @Test
+    public void storeCashierId() {
+        assertEquals(false, apiClient.storeCashierId("1234"));
+        assertThrows(NullPointerException.class, () -> { apiClient.storeCashierId(null);});
+    }
 }
