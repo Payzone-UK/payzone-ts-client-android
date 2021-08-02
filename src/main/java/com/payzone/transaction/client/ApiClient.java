@@ -155,27 +155,38 @@ public class ApiClient extends Handler {
     }
 
     private boolean sendMessage(int request, String responseKey, String payload) {
+        // Create and send a message to the service, using a supported 'what' value
         return postDelayed(new Runnable() {
             public void run() {
-                System.out.println("## MBOUND is: " + mBound);
-                if (!mBound) {
-                    throw new RuntimeException("No Bindings with Transaction service.");
-                }
+                long currentTime = System.currentTimeMillis();
+                long stopTime = currentTime + 20000;
+                System.out.println("## mBound is: " + mBound);
                 // Create and send a message to the service, using a supported 'what' value
                 Message msg = Message.obtain(null, request, 0, 0);
                 msg.replyTo = replyMessenger;
+                System.out.println("## Started sending message at: "+ currentTime);
                 try {
                     Bundle data = new Bundle();
                     data.putString("responseKey", responseKey);
                     data.putString(responseKey, payload);
                     data.putString("packageName", ctx.getPackageName());
                     msg.setData(data);
-                    mService.send(msg);
+                    do {
+                        currentTime = System.currentTimeMillis();
+                        if (mBound) {
+                            mService.send(msg);
+                            System.out.println("## Message code "+ request +" sent at : "+ currentTime);
+                            break;
+                        }
+                    } while (currentTime <= stopTime);
+                    if (!mBound) {
+                        throw new RuntimeException("No Bindings with Transaction service.");
+                    }
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
 
             }
-        }, 3000);
+        }, 100);
     }
 }
