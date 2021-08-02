@@ -171,14 +171,14 @@ public class ApiClient extends Handler {
                     data.putString(responseKey, payload);
                     data.putString("packageName", ctx.getPackageName());
                     msg.setData(data);
-                    do {
-                        currentTime = System.currentTimeMillis();
+                    while (currentTime <= stopTime) {
                         if (mBound) {
                             mService.send(msg);
                             System.out.println("## Message code "+ request +" sent at : "+ currentTime);
                             break;
                         }
-                    } while (currentTime <= stopTime);
+                        currentTime = System.currentTimeMillis();
+                    }
                     if (!mBound) {
                         throw new RuntimeException("No Bindings with Transaction service.");
                     }
@@ -187,6 +187,6 @@ public class ApiClient extends Handler {
                 }
 
             }
-        }, 100);
+        }, 1000);
     }
 }
