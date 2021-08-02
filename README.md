@@ -140,6 +140,8 @@ This is the client library for interacting with the Payzone Transaction Service 
 <details>
   <summary>initTransaction - Initialise a transaction on Payzone Network </summary>
   <br>
+  
+  Client App use case (For client apps with associated clientRef):
 
 
     JSONObject obj = new JSONObject();
@@ -150,7 +152,17 @@ This is the client library for interacting with the Payzone Transaction Service 
     boolean success =  apiClient.initTransaction(obj);
     System.out.println("## Transaction init sent to service queue: "+success);
 
-
+  Standard Payzone use case:
+  
+    JSONObject obj = new JSONObject();
+    obj.put("transactionSource", "0");
+    obj.put("productId", "24382");
+    obj.put("transactionGuid", "bfd0f250-66ce-11eb-863b-a5942ff6aec7");
+    obj.put("transactionAmount", 1000);
+    obj.put("barcode", "63385450042016567880");
+    boolean success =  apiClient.initTransaction(obj);
+    System.out.println("## Transaction init sent to service queue: "+success);
+      
 </details>
 <hr/>
 
@@ -160,7 +172,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 
 
     JSONObject obj = new JSONObject();
-    obj.put("id", "bfd0f250-66ce-11eb-863b-a5942ff6aec7");
+    obj.put("id", "bfd0f250-66ce-11eb-863b-a5942ff6aec7"); // i.e. Your transactionGuid
     obj.put("utrn", "1100883828292828"); // or this could be ticketNumber etc..
     obj.put("responseCode", "00"); // "00" for successful topup or "05" for failure.
     obj.put("smartMeterErrorText", "Something went wrong"); // Should in case it is a faulure
