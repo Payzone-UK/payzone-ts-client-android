@@ -171,7 +171,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 
     JSONObject obj = new JSONObject();
     obj.put("id", "bfd0f250-66ce-11eb-863b-a5942ff6aec7"); // i.e. Your transactionGuid
-    obj.put("utrn", "1100883828292828"); // or this could be ticketNumber etc..
+    obj.put("utrn", "1100883828292828"); // or this could be ticketNumber, extra_json_info object etc..
     obj.put("responseCode", "00"); // "00" for successful topup or "05" for failure.
     obj.put("smartMeterErrorText", "Something went wrong"); // Should in case it is a faulure
     boolean success =  apiClient.completeTransaction(obj);
