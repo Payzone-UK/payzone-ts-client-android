@@ -100,10 +100,8 @@ This is the client library for interacting with the Payzone Transaction Service 
   <summary>getToken - Get Token </summary>
   <br>
 
-
-    JSONObject obj = new JSONObject();
-    obj.put("tId", 49691);
-    boolean success =  apiClient.getToken(obj);
+    String tId = "49691";
+    boolean success =  apiClient.getToken(tid);
     System.out.println("## Get Token Request sent to service queue: "+success);
 
 
