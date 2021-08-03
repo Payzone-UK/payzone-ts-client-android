@@ -2,6 +2,7 @@ package com.payzone.transaction.client;
 
 public class MessageConstants {
     // Request Codes
+    public static final int MSG_CONFIG_SETUP = 0;
     public static final int MSG_REGISTER_DEVICE = 1;
     public static final int MSG_INIT_TRANSACTION = 2;
     public static final int MSG_COMPLETE_TRANS = 3;
@@ -13,6 +14,7 @@ public class MessageConstants {
     public static final int MSG_STORE_CID = 9;
 
     // Parameter KEYS FOR
+    public static final String RESP_CONFIG_SETUP = "configSetup";
     public static final String RESP_REGISTER_DEVICE = "registerDevice";
     public static final String RESP_INIT_TRANSACTION = "initTransaction";
     public static final String RESP_COMPLETE_TRANS = "completeTransaction";

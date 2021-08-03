@@ -63,10 +63,8 @@ public class ApiClientUnitTest {
     }
 
     @Test
-    public void getToken() throws JSONException {
-        JSONObject obj = new JSONObject();
-        obj.put("tId", "49691");
-        assertEquals(false, apiClient.getToken(obj));
+    public void getToken() {
+        assertEquals(false, apiClient.getToken("49691"));
     }
 
     @Test

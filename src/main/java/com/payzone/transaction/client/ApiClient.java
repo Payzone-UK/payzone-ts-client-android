@@ -64,7 +64,9 @@ public class ApiClient extends Handler {
                 new ComponentName("com.payzone.transaction",
                         "com.payzone.transaction.services.TransactionService"));
         boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        System.out.println("## bindResult is: "+ bindResult);
+        System.out.println("## Binding in progress: "+ bindResult);
+        boolean res =  fetchMyConfigData();
+        System.out.println("## Fetch Config queued: "+ res);
     }
 
     public boolean destroyService(){
@@ -73,6 +75,14 @@ public class ApiClient extends Handler {
             mBound = false;
         }
         return true;
+    }
+
+    private boolean fetchMyConfigData() {
+        return sendMessage(
+                MessageConstants.MSG_CONFIG_SETUP,
+                MessageConstants.RESP_CONFIG_SETUP,
+                ""
+        );
     }
 
     public boolean registerDevice(JSONObject jsonParams) throws JSONException {
@@ -127,11 +137,11 @@ public class ApiClient extends Handler {
         );
     }
 
-    public boolean getToken(JSONObject jsonParams) throws JSONException {
+    public boolean getToken(String tId) {
         return sendMessage(
                 MessageConstants.MSG_GET_TOKEN,
                 MessageConstants.RESP_GET_TOKEN,
-                jsonParams.toString()
+                tId
         );
     }
 
@@ -180,7 +190,7 @@ public class ApiClient extends Handler {
                         currentTime = System.currentTimeMillis();
                     }
                     if (!mBound) {
-                        throw new RuntimeException("No Bindings with Transaction service.");
+                        throw new RuntimeException("## No Bindings with Transaction service.");
                     }
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
