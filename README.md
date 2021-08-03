@@ -29,23 +29,23 @@ This is the client library for interacting with the Payzone Transaction Service 
             String response;
             switch (msg.what) {
                 case MessageConstants.MSG_REGISTER_DEVICE:
-                    response = msg.getData().getString(MessageConstants.RESP_REGISTER_DEVICE);
+                    response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_REGISTER_DEVICE));
                     System.out.println("## Register Device Response = "+response);
                     break;
                 case MessageConstants.MSG_INIT_TRANSACTION:
-                    response = msg.getData().getString(MessageConstants.RESP_INIT_TRANSACTION);
+                    response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_INIT_TRANSACTION));
                     System.out.println("## Transaction Initialised Response = "+response);
                     break;
                 case MessageConstants.MSG_MARK_TRANS_SUCCESS:
-                    response = msg.getData().getString(MessageConstants.RESP_MARK_TRANS_SUCCESS);
+                    response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_MARK_TRANS_SUCCESS));
                     System.out.println("## Marked Successful Response = "+response);
                     break;
                 case MessageConstants.MSG_MARK_TRANS_FAILED:
-                    response = msg.getData().getString(MessageConstants.RESP_MARK_TRANS_FAILED);
+                    response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_MARK_TRANS_FAILED));
                     System.out.println("## Marked Failed Response = "+response);
                     break;
                 case MessageConstants.MSG_MARK_RECEIPT_PRINTED:
-                    response = msg.getData().getString(MessageConstants.RESP_MARK_RECEIPT_PRINTED);
+                    response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_MARK_RECEIPT_PRINTED));
                     System.out.println("## Marked Receipt Printed Response = "+response);
                     break;
                 default:
@@ -54,6 +54,10 @@ This is the client library for interacting with the Payzone Transaction Service 
         }
     }
 
+  <b>NOTE:</b>
+  
+  You will notice a `ApiClient.decompressData` method wrapped around the response. This is because we only send compress string response data.
+  Android Bundle/Parcel has a size limit and to mitigate against that we have to compress our responses. Therefore, you have to decompress the response data for all message responses coming back from the Payzone Transaction Service.    
 </details>
 <hr/>
 

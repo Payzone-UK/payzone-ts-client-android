@@ -10,11 +10,18 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Base64;
 
 import com.payzone.transaction.client.handlers.MessageResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.zip.GZIPInputStream;
 
 public class ApiClient extends Handler {
     /**
@@ -164,6 +171,32 @@ public class ApiClient extends Handler {
                 MessageConstants.RESP_STORE_CID,
                 cashierId
         );
+    }
+
+    public static String decompressData(String zipText) {
+        String sReturn = "";
+        try {
+            byte[] compressed = Base64.decode(zipText, Base64.DEFAULT);
+            if (compressed.length > 4) {
+                GZIPInputStream gzipInputStream = null;
+                    gzipInputStream = new GZIPInputStream(
+                            new ByteArrayInputStream(compressed, 4,
+                                    compressed.length - 4));
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                for (int value = 0; value != -1;) {
+                    value = gzipInputStream.read();
+                    if (value != -1) {
+                        baos.write(value);
+                    }
+                }
+                gzipInputStream.close();
+                baos.close();
+                sReturn = new String(baos.toByteArray(), "UTF-8");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sReturn;
     }
 
     private boolean sendMessage(int request, String responseKey, String payload) {
