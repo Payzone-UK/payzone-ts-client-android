@@ -5,6 +5,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 ## Defined Methods
 
 - initService
+- isTransactionReady
 - destroyService
 - registerDevice
 - getToken
@@ -81,6 +82,18 @@ This is the client library for interacting with the Payzone Transaction Service 
     }
 
 
+</details>
+<hr/>
+
+<details>
+  <summary>isTransactionReady - Checks if Payzone Transaction Service (PTS) is ready to start transacting (It will check if an API Token and Cashier ID exists). </summary>
+  <br>
+
+    boolean success =  apiClient.isTransactionReady();
+    System.out.println("## Is Transaction Ready check sent to service queue: "+success);
+
+  <b>Note:</b> 
+  The call is Async and a response will be sent via the response handler.
 </details>
 <hr/>
 
