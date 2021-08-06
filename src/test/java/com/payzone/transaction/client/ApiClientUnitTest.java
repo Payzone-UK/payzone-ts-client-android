@@ -112,4 +112,10 @@ public class ApiClientUnitTest {
         assertEquals(false, apiClient.storeCashierId("1234"));
         assertThrows(NullPointerException.class, () -> { apiClient.storeCashierId(null);});
     }
+
+    @Test
+    public void isTransactionReady() {
+        assertEquals(false, apiClient.isTransactionReady());
+        assertThrows(NullPointerException.class, () -> { apiClient.isTransactionReady();});
+    }
 }

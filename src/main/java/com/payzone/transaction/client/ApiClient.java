@@ -173,6 +173,13 @@ public class ApiClient extends Handler {
         );
     }
 
+    public boolean isTransactionReady() {
+        return sendMessage(
+                MessageConstants.MSG_IS_TRANSACTION_READY,
+                MessageConstants.RESP_IS_TRANSACTION_READY,
+                "");
+    }
+
     public static String decompressData(String zipText) {
         String sReturn = "";
         try {
