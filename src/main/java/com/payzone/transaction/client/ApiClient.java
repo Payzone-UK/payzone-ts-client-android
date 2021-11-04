@@ -152,6 +152,14 @@ public class ApiClient extends Handler {
         );
     }
 
+    public boolean getTokenBySerialNumber(String serialNumber) {
+        return sendMessage(
+                MessageConstants.MSG_GET_TOKEN_BY_SERIAL_NUMBER,
+                MessageConstants.RESP_GET_TOKEN_BY_SERIAL_NUMBER,
+                serialNumber
+        );
+    }
+
     public boolean startSession(JSONObject jsonParams) throws JSONException {
         JSONObject sessionJsonObj = new JSONObject();
         sessionJsonObj.put("session", jsonParams);

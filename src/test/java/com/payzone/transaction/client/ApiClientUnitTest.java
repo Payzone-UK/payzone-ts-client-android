@@ -68,6 +68,11 @@ public class ApiClientUnitTest {
     }
 
     @Test
+    public void getTokenBySerialNumber() {
+        assertEquals(false, apiClient.getTokenBySerialNumber("1545D2053"));
+    }
+
+    @Test
     public void startSession() throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("pin", 1234);

@@ -9,6 +9,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 - destroyService
 - registerDevice
 - getToken
+- getTokenBySerialNumber
 - startSession
 - storeCashierId
 - initTransaction
@@ -120,6 +121,18 @@ This is the client library for interacting with the Payzone Transaction Service 
     String tId = "49691";
     boolean success =  apiClient.getToken(tId);
     System.out.println("## Get Token Request sent to service queue: "+success);
+
+
+</details>
+<hr/>
+
+<details>
+  <summary>getTokenBySerialNumber - Get Token by Serial Number</summary>
+  <br>
+
+    String serialNumber = "1545D2053";
+    boolean success =  apiClient.getTokenBySerialNumber(serialNumber);
+    System.out.println("## Get Token By Serial Number Request sent to service queue: "+success);
 
 
 </details>
