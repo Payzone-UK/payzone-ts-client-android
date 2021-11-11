@@ -5,6 +5,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 ## Defined Methods
 
 - initService
+- fetchConfigData
 - isTransactionReady
 - destroyService
 - registerDevice
@@ -80,6 +81,30 @@ This is the client library for interacting with the Payzone Transaction Service 
         replyMessenger = new Messenger(responseHandler);
         apiClient = new ApiClient(getApplicationContext(), replyMessenger);
         apiClient.initService(); // Connects your app with the Payzone Transaction Service Component
+    }
+
+
+</details>
+<hr/>
+
+<details>
+  <summary> fetchConfigData - Fetch environment params from Payzone Config Server App</summary>
+  <br>
+
+    The ApiClient class constructor params are:
+
+    - Your activity context.
+    - Reply Messenger created using your Response handler.
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        responseHandler = new ResponseHandler();
+        replyMessenger = new Messenger(responseHandler);
+        apiClient = new ApiClient(getApplicationContext(), replyMessenger);
+        apiClient.initService(); // Connects your app with the Payzone Transaction Service Component
+        apiClient.fetchConfigData(); // Fetch environment params
     }
 
 
