@@ -41,6 +41,7 @@ public class ApiClientUnitTest {
 
         apiClient = new ApiClient(mContext, null);
         apiClient.initService();
+        apiClient.fetchConfigData();
     }
 
     @Test
@@ -65,6 +66,11 @@ public class ApiClientUnitTest {
     @Test
     public void getToken() {
         assertEquals(false, apiClient.getToken("49691"));
+    }
+
+    @Test
+    public void getTokenBySerialNumber() {
+        assertEquals(false, apiClient.getTokenBySerialNumber("1545D2053"));
     }
 
     @Test

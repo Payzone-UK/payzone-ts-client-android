@@ -5,10 +5,12 @@ This is the client library for interacting with the Payzone Transaction Service 
 ## Defined Methods
 
 - initService
+- fetchConfigData
 - isTransactionReady
 - destroyService
 - registerDevice
 - getToken
+- getTokenBySerialNumber
 - startSession
 - storeCashierId
 - initTransaction
@@ -86,6 +88,30 @@ This is the client library for interacting with the Payzone Transaction Service 
 <hr/>
 
 <details>
+  <summary> fetchConfigData - Fetch environment params from Payzone Config Server App</summary>
+  <br>
+
+    The ApiClient class constructor params are:
+
+    - Your activity context.
+    - Reply Messenger created using your Response handler.
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        responseHandler = new ResponseHandler();
+        replyMessenger = new Messenger(responseHandler);
+        apiClient = new ApiClient(getApplicationContext(), replyMessenger);
+        apiClient.initService(); // Connects your app with the Payzone Transaction Service Component
+        apiClient.fetchConfigData(); // Fetch environment params
+    }
+
+
+</details>
+<hr/>
+
+<details>
   <summary>isTransactionReady - Checks if Payzone Transaction Service (PTS) is ready to start transacting (It will check if an API Token and Cashier ID exists). </summary>
   <br>
 
@@ -120,6 +146,18 @@ This is the client library for interacting with the Payzone Transaction Service 
     String tId = "49691";
     boolean success =  apiClient.getToken(tId);
     System.out.println("## Get Token Request sent to service queue: "+success);
+
+
+</details>
+<hr/>
+
+<details>
+  <summary>getTokenBySerialNumber - Get Token by Serial Number</summary>
+  <br>
+
+    String serialNumber = "1545D2053";
+    boolean success =  apiClient.getTokenBySerialNumber(serialNumber);
+    System.out.println("## Get Token By Serial Number Request sent to service queue: "+success);
 
 
 </details>
