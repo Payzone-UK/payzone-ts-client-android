@@ -1,7 +1,6 @@
 package com.payzone.transaction.client;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.test.mock.MockContext;
@@ -123,5 +122,33 @@ public class ApiClientUnitTest {
     public void isTransactionReady() {
         assertEquals(false, apiClient.isTransactionReady());
         assertThrows(NullPointerException.class, () -> { apiClient.isTransactionReady();});
+    }
+
+    @Test
+    public void readKey() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.readKey());
+        assertThrows(NullPointerException.class, () -> { apiClient.readKey();});
+    }
+
+    @Test
+    public void addCredit() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.addCredit(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.addCredit(obj);});
+    }
+
+    @Test
+    public void rti() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.rti(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.rti(obj);});
+    }
+
+    @Test
+    public void isKeyInserted() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.isKeyInserted());
+        assertThrows(NullPointerException.class, () -> { apiClient.isKeyInserted();});
     }
 }

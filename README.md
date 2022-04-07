@@ -18,6 +18,9 @@ This is the client library for interacting with the Payzone Transaction Service 
 - markTransactionSuccess
 - markTransactionFailed
 - markReceiptPrinted
+- getKeyImage
+- addCredit
+- rti
 
 <br/>
 
@@ -273,6 +276,51 @@ This is the client library for interacting with the Payzone Transaction Service 
     obj.put("id", "bfd0f250-66ce-11eb-863b-a5942ff6aec7");
     boolean success =  apiClient.markReceiptPrinted(obj);
     System.out.println("## Transaction receipt printed request sent to service queue: "+success);
+
+
+</details>
+<hr/>
+
+<details>
+  <summary>readKey - Read talexus key </summary>
+  <br>
+
+
+    boolean success =  apiClient.readKey();
+    System.out.println("## Read talexus key: " + success);
+
+
+</details>
+<hr/>
+
+
+<details>
+  <summary>addCredit - Talexus add credit using Payzone Transaction Network  </summary>
+  <br>
+
+
+    JSONObject obj = new JSONObject();
+    obj.put("amount", "600");
+    obj.put("productId", "68128");
+    obj.put("keyImage", "555560321131866500366BE0400500550001D21C0000005AC000F779A2A1E350990B840084008400440004000400040004000400040044008400040004000400101101000F0D0000000000000000000000000000000000000000000080000098000000000000C04C000000000000000000000000000000000000000000003A94");
+    boolean success =  apiClient.addCredit(obj);
+    System.out.println("## Talexus add credit: "+success);
+
+
+</details>
+<hr/>
+
+<details>
+  <summary>rti - Talexus RTI using Payzone Transaction Network  </summary>
+  <br>
+
+
+    JSONObject obj = new JSONObject();
+    obj.put("rtiReference", "05318140");
+    obj.put("productId", "68129");
+    obj.put("keyImage", "555560321131866500366BE0400500550001D21C0000005AC000F779A2A1E350990B840084008400440004000400040004000400040044008400040004000400101101000F0D0000000000000000000000000000000000000000000080000098000000000000C04C000000000000000000000000000000000000000000003A94");
+    boolean success =  apiClient.rti(obj);
+    System.out.println("## Talexus add credit: "+success);
 
 
 </details>

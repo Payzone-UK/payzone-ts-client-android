@@ -183,6 +183,38 @@ public class ApiClient extends Handler {
                 "");
     }
 
+    public boolean readKey() {
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_READ_KEY,
+                MessageConstants.RESP_TALEXUS_READ_KEY,
+                ""
+        );
+    }
+
+    public boolean addCredit(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_ADD_CREDIT,
+                MessageConstants.RESP_TALEXUS_ADD_CREDIT,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean rti(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_RTI,
+                MessageConstants.RESP_TALEXUS_RTI,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean isKeyInserted() {
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED,
+                MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED,
+                ""
+        );
+    }
+
     public static String decompressData(String zipText) {
         String sReturn = "";
         try {
