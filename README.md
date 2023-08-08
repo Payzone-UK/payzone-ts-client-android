@@ -18,7 +18,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 - markTransactionSuccess
 - markTransactionFailed
 - markReceiptPrinted
-- getKeyImage
+- readKey
 - addCredit
 - rti
 
