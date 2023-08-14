@@ -21,6 +21,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 - readKey
 - addCredit
 - rti
+- isKeyInserted
 
 <br/>
 
@@ -322,6 +323,16 @@ This is the client library for interacting with the Payzone Transaction Service 
     boolean success =  apiClient.rti(obj);
     System.out.println("## Talexus add credit: "+success);
 
+
+</details>
+<hr/>
+
+<details>
+  <summary>isKeyInserted - Check if talexus key is inserted </summary>
+  <br>
+
+    boolean success =  apiClient.isKeyInserted();
+    System.out.println("## Is talexus key inserted: " + success);
 
 </details>
 <hr/>
