@@ -148,4 +148,10 @@ public class ApiClientUnitTest {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.isKeyInserted());
     }
+    @Test
+    public void reversal() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.reversal(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.reversal(null);});
+    }
 }

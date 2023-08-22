@@ -22,6 +22,7 @@ This is the client library for interacting with the Payzone Transaction Service 
 - addCredit
 - rti
 - isKeyInserted
+- reversal
 
 <br/>
 
@@ -380,6 +381,25 @@ This is the client library for interacting with the Payzone Transaction Service 
     Reseponse:-
      
      {"success":true,"keyInserted":true}
+     
+</details>
+<details>
+  <summary>reversal - Reverse the last transaction </summary>
+  <br>
+
+    JSONObject obj = new JSONObject();
+    obj.put("productId", "68129");
+    obj.put("keyImage", "555560321131866500366BE0400500550001D21C0000005AC000F779A2A1E350990B840084008400440004000400040004000400040044008400040004000400101101000F0D0000000000000000000000000000000000000000000080000098000000000000C04C000000000000000000000000000000000000000000003A94");
+    boolean success =  apiClient.reversal(obj);
+    System.out.println("## Talexus reversal: "+success);
+
+    Reseponse:-
+    {
+      "success": true,
+      "transactionGuid": "aa204f2a-9eb0-43d1-a7e2-e00de5372eb8",
+      "customerReceipt": "<style>\n.receipt_preview {width: 100%;height: 100%;margin: 100px 0;}.receipt_preview.paper-bus {width: 100%;margin: 0 160px 100px 0;border-right: dashed 2px black;}@media only screen and (min-width : 575px){.receipt_preview td {width: 100%;font-size: 22pt;font-family: arial;-webkit-font-smoothing: none;padding: 0;}}@media only screen and (max-width : 575px) and (orientation:portrait){.receipt_preview td {width: 100%;font-size: 19pt;font-family: arial;-webkit-font-smoothing: none;padding: 0;}}.receipt_preview .receipt_line {border-bottom: 3px dashed #000;}.receipt_preview .receipt_half_height {width: 100%;height: 7px;}.receipt_preview .receipt_preview_image {width: 100%;}<\/style>\n<table class=\"receipt_preview\">\n<tr><td colspan=\"2\" width=\"100%\"   align=\"center\"><\/td><\/tr><tr><td colspan=\"2\" width=\"100%\"   align=\"center\"><\/td><\/tr><tr><td colspan=\"2\" width=\"100%\"   align=\"center\"><\/td><\/tr><tr><td colspan=\"2\" width=\"100%\"   align=\"center\"><\/td><\/tr><tr><td class=\"receipt_half_height\" colspan=\"2\"><div class=\"receipt_half_height\"><div><\/td><\/tr><tr><td colspan=\"2\" width=\"100%\"   align=\"left\">Talexus EDF<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">METER TYPE:<\/td><td width=\"50%\"   align=\"right\">SE<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">METER NUMBER:<\/td><td width=\"50%\"   align=\"right\">S95A062911<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">KEY NUMBER:<\/td><td width=\"50%\"   align=\"right\">002D7DBC<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">CRN:<\/td><td width=\"50%\"   align=\"right\">671069359233        <\/td><\/tr><tr><td width=\"50%\"   align=\"left\">SUPPLIER ID:<\/td><td width=\"50%\"   align=\"right\">0<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">HOST ID:<\/td><td width=\"50%\"   align=\"right\">0<\/td><\/tr><tr><td class=\"receipt_half_height\" colspan=\"2\"><div class=\"receipt_half_height\"><div><\/td><\/tr><tr><td class=\"receipt_half_height\" colspan=\"2\"><div class=\"receipt_half_height\"><div><\/td><\/tr><tr><td colspan=\"2\"><hr><\/td><\/tr><tr><td colspan=\"2\" width=\"100%\"   align=\"left\">RTI APPLIED<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">Customer ID<\/td><td width=\"50%\"   align=\"right\"><\/td><\/tr><tr><td colspan=\"2\"><hr><\/td><\/tr><tr><td class=\"receipt_half_height\" colspan=\"2\"><div class=\"receipt_half_height\"><div><\/td><\/tr><tr><td width=\"50%\"   align=\"left\">CREDIT:<\/td><td width=\"50%\"   align=\"right\">&pound;30.00<\/td><\/tr><tr><td class=\"receipt_half_height\" colspan=\"2\"><div class=\"receipt_half_height\"><div><\/td><\/tr><tr><td class=\"receipt_half_height\" colspan=\"2\"><div class=\"receipt_half_height\"><div><\/td><\/tr><tr><td colspan=\"2\"><hr><\/td><\/tr><tr><td colspan=\"2\" width=\"100%\"   align=\"center\">CUSTOMER COPY<\/td><\/tr><tr><td colspan=\"2\"><hr><\/td><\/tr><tr><td class=\"receipt_half_height\" colspan=\"2\"><div class=\"receipt_half_height\"><div><\/td><\/tr><tr><td width=\"50%\"   align=\"left\">M423857<\/td><td width=\"50%\"   align=\"right\">C0002<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">T35112029<\/td><td width=\"50%\"   align=\"right\">R0031<\/td><\/tr><tr><td width=\"50%\"   align=\"left\">DATE 17\/08\/23<\/td><td width=\"50%\"   align=\"right\">10:48<\/td><\/tr><\/table><br><br><br><br>\n",
+      "status": "Completed"
+    }
      
 </details>
 <hr/>

@@ -213,6 +213,13 @@ public class ApiClient extends Handler {
                 ""
         );
     }
+    public boolean reversal(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_REVERSE_CREDIT,
+                MessageConstants.RESP_TALEXUS_REVERSE_CREDIT,
+                jsonParams.toString()
+        );
+    }
 
     public static String decompressData(String zipText) {
         String sReturn = "";

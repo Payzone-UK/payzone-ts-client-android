@@ -18,6 +18,7 @@ public class MessageConstants {
     public static final int MSG_TALEXUS_ADD_CREDIT = 13;
     public static final int MSG_TALEXUS_RTI = 14;
     public static final int MSG_TALEXUS_IS_KEY_INSERTED = 15;
+    public static final int MSG_TALEXUS_REVERSE_CREDIT = 16;
 
     // Parameter KEYS FOR
     public static final String RESP_CONFIG_SETUP = "configSetup";
@@ -36,4 +37,5 @@ public class MessageConstants {
     public static final String RESP_TALEXUS_ADD_CREDIT = "addCredit";
     public static final String RESP_TALEXUS_RTI = "rti";
     public static final String RESP_TALEXUS_IS_KEY_INSERTED = "isKeyInserted";
+    public static final String RESP_TALEXUS_REVERSE_CREDIT = "reversal";
 }
