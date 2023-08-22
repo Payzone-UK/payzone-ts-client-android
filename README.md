@@ -70,6 +70,28 @@ This is the client library for interacting with the Payzone Transaction Service 
 <hr/>
 
 <details>
+  <summary>Talexus - Handle the key status</summary>
+  <br>
+
+  Register a broadcast receiver to receive the Talexus key status(inserted/removed)
+
+    private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boolean isKeyInserted = intent.getExtras().getBoolean(MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED);
+            //Perform the actions
+        }
+    };
+
+    
+    registerReceiver(mHandleMessageReceiver, new IntentFilter(MessageConstants.ACTION_KEY_INSERTED));
+
+
+
+</details>
+<hr/>
+
+<details>
   <summary> initService - Initialise the ApiClient class in your activity onStart method</summary>
   <br>
 

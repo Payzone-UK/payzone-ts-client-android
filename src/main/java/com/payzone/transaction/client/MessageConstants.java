@@ -38,4 +38,8 @@ public class MessageConstants {
     public static final String RESP_TALEXUS_RTI = "rti";
     public static final String RESP_TALEXUS_IS_KEY_INSERTED = "isKeyInserted";
     public static final String RESP_TALEXUS_REVERSE_CREDIT = "reversal";
+
+    // Intent actions to receive the broadcasts
+    public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
+
 }
