@@ -1,0 +1,41 @@
+name: Test Candidate
+
+on:
+  push:
+    branches: [ "test/**" ]
+
+jobs:
+  build_aar:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Create github.properties file
+        run: |
+          touch github.properties
+          echo gpr.usr=${{ secrets.GPR_USER }} >> github.properties
+          echo gpr.key=${{ secrets.GPR_API_KEY }} >> github.properties
+          echo "cat github.properties"
+          cat github.properties
+      - name: Retrieve package name
+        run: |
+          echo "::set-output name=APP_NAME::$(${{github.workspace}}/gradlew -q appName)"
+        id: app_name
+      - name: Set package name
+        run: |
+          echo "APP_NAME=${{steps.app_name.outputs.APP_NAME}}-release.aar" >> $GITHUB_ENV
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Upload package
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{env.APP_NAME}}
+          path: build/outputs/aar/${{env.APP_NAME}}
