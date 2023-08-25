@@ -1,0 +1,71 @@
+name: Release Candidate
+
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  publish_aar:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Create github.properties file
+        run: |
+          touch github.properties
+          echo gpr.usr=${{ secrets.GPR_USER }} >> github.properties
+          echo gpr.key=${{ secrets.GPR_API_KEY }} >> github.properties
+          echo "cat github.properties"
+          cat github.properties
+      - name: Retrieve Version name
+        run: |
+          echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q versionName)"
+        id: app_version
+      - name: Set Version name
+        run: |
+          echo "VERSION_NAME=${{steps.app_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
+      - name: Retrieve package name
+        run: |
+          echo "::set-output name=APP_NAME::$(${{github.workspace}}/gradlew -q appName)"
+        id: app_name
+      - name: Set package name
+        run: |
+          echo "APP_NAME=${{steps.app_name.outputs.APP_NAME}}-release.aar" >> $GITHUB_ENV
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Upload Package
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{env.APP_NAME}}
+          path: build/outputs/aar/${{env.APP_NAME}}
+      - name: Download Package from build
+        uses: actions/download-artifact@v1
+        with:
+          name: ${{env.APP_NAME}}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v.${{env.VERSION_NAME}}
+          release_name: Release  ${{env.VERSION_NAME}}
+      - name: Publish package
+        run: ./gradlew build
+      - name: Upload Release Package
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/outputs/aar/${{env.APP_NAME}}
+          asset_name: ${{env.APP_NAME}}
+          asset_content_type: application/zip
