@@ -34,7 +34,7 @@ jobs:
           echo "APP_NAME=${{steps.app_name.outputs.APP_NAME}}-release.aar" >> $GITHUB_ENV
       - name: Build with Gradle
         run: ./gradlew build
-      - name: Upload APK
+      - name: Upload package
         uses: actions/upload-artifact@v1
         with:
           name: ${{env.APP_NAME}}
