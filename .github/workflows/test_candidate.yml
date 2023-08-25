@@ -2,8 +2,8 @@ name: Test Candidate
 
 on:
   push:
-    branch:
-      - 'test/**'
+    branches: [ "test/**" ]
+
 jobs:
   build_aar:
 
