@@ -24,6 +24,20 @@ jobs:
           echo gpr.key=${{ secrets.GPR_API_KEY }} >> github.properties
           echo "cat github.properties"
           cat github.properties
+      - name: Run unit tests
+        run: ./gradlew test
+      - name: Upload test report directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: TestResults
+          path: app/build/reports/tests/testDebugUnitTest/
+      - name: Run lint
+        run: ./gradlew lint
+      - name: Upload lint report
+        uses: actions/upload-artifact@v2
+        with:
+          name: LintResult
+          path: app/build/reports/lint-results*.html
       - name: Retrieve Version name
         run: |
           echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q versionName)"
