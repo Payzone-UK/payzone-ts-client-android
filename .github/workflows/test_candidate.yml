@@ -31,14 +31,14 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: TestResults
-          path: app/build/reports/tests/testDebugUnitTest/
+          path: build/reports/tests/testDebugUnitTest/
       - name: Run lint
         run: ./gradlew lint
       - name: Upload lint report
         uses: actions/upload-artifact@v2
         with:
           name: LintResult
-          path: app/build/reports/lint-results*.html
+          path: build/reports/lint-results*.html
       - name: Retrieve package name
         run: |
           echo "::set-output name=APP_NAME::$(${{github.workspace}}/gradlew -q appName)"
