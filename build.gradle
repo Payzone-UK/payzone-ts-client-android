@@ -23,7 +23,7 @@ allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 def getVersionName = { ->
-    return "0.1.5"  // Replace with lib version Name
+    return versName
 }
 
 def getArtifactId = { ->
@@ -35,10 +35,10 @@ android {
         targetSdkVersion 32
         compileSdk 32
         versionCode 1
-        versionName getVersionName()
+        versionName versName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        archivesBaseName = "${getArtifactId()}-${getVersionName()}"
+        archivesBaseName = "${getArtifactId()}-${versName}"
     }
 
     buildTypes {
@@ -59,10 +59,10 @@ android {
     }
     useLibrary 'android.test.mock'
     tasks.register("versionName") {
-        println getVersionName()
+        println versName
     }
     tasks.register("appname") {
-        println "${getArtifactId()}-${getVersionName()}"
+        println "${getArtifactId()}-${versName}}"
     }
 }
 
