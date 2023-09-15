@@ -53,6 +53,7 @@ public class ApiClient extends Handler {
                 mService = new Messenger(service);
                 mBound = true;
                 System.out.println("## Service Connection Established...");
+                fetchConfigData();
             }
 
             public void onServiceDisconnected(ComponentName className) {
