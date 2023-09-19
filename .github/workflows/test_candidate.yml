@@ -39,19 +39,17 @@ jobs:
         with:
           name: LintResult
           path: build/reports/lint-results*.html
-      - name: Retrieve package name
-        run: |
-          echo "::set-output name=APP_NAME::$(${{github.workspace}}/gradlew -q appName)"
-        id: app_name
-      - name: Set package name
-        run: |
-          echo "APP_NAME=${{steps.app_name.outputs.APP_NAME}}-release.aar" >> $GITHUB_ENV
       - name: Get branch name
         id: extract_branch
         run: |
           echo "::set-output name=branch::$(echo ${GITHUB_REF##*/})"
       - name: Build with Gradle
         run: ./gradlew build -PverName=${{steps.extract_branch.outputs.branch}} clean build
+      - name: Set App name
+        run: |
+          echo "APP_NAME=$(basename  `ls build/outputs/aar/*debug.aar | head -n 1`)" >> $GITHUB_ENV
+        id:
+          app_name
       - name: Upload package
         uses: actions/upload-artifact@v1
         with:
