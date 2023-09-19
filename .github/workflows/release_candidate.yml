@@ -45,15 +45,13 @@ jobs:
       - name: Set Version name
         run: |
           echo "VERSION_NAME=${{steps.app_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
-      - name: Retrieve package name
-        run: |
-          echo "::set-output name=APP_NAME::$(${{github.workspace}}/gradlew -q appName)"
-        id: app_name
-      - name: Set package name
-        run: |
-          echo "APP_NAME=${{steps.app_name.outputs.APP_NAME}}-release.aar" >> $GITHUB_ENV
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Set App name
+        run: |
+          echo "APP_NAME=$(basename  `ls build/outputs/aar/*release.aar | head -n 1`)" >> $GITHUB_ENV
+        id:
+            app_name
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
