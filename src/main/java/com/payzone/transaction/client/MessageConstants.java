@@ -42,9 +42,5 @@ public class MessageConstants {
     public static final String RESP_QUANTUM_NSP_HOT_CARD = "nspHotcard";
     public static final String RESP_QUANTUM_CS_REGIONAL = "csRegional";
     public static final String RESP_QUANTUM_TRANSACTION_COMPLETE = "quantumTransactionComplete";
-    public static final String RESP_QUANTUM_RTI = "wuantumRti";
-
-    // Intent actions to receive the broadcasts
-    public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
-
+    public static final String RESP_QUANTUM_RTI = "quantumRti";
 }
