@@ -122,7 +122,6 @@ public class ApiClientUnitTest {
     @Test
     public void isTransactionReady() {
         assertEquals(false, apiClient.isTransactionReady());
-        assertThrows(NullPointerException.class, () -> { apiClient.isTransactionReady();});
     }
 
     @Test
