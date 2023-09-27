@@ -72,16 +72,11 @@ public class ApiClient extends Handler {
                         "com.payzone.transaction.services.TransactionService"));
         boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         System.out.println("## Binding in progress: "+ bindResult);
-        boolean res =  fetchMyConfigData();
-        System.out.println("## Fetch Config queued: "+ res);
     }
 
-    public boolean destroyService(){
-        if (mBound) {
-            ctx.unbindService(mConnection);
-            mBound = false;
-        }
-        return true;
+    public void fetchConfigData() {
+        boolean res = fetchMyConfigData();
+        System.out.println("## Fetch Config Data: "+ res);
     }
 
     private boolean fetchMyConfigData() {
@@ -149,6 +144,14 @@ public class ApiClient extends Handler {
                 MessageConstants.MSG_GET_TOKEN,
                 MessageConstants.RESP_GET_TOKEN,
                 tId
+        );
+    }
+
+    public boolean getTokenBySerialNumber(String serialNumber) {
+        return sendMessage(
+                MessageConstants.MSG_GET_TOKEN_BY_SERIAL_NUMBER,
+                MessageConstants.RESP_GET_TOKEN_BY_SERIAL_NUMBER,
+                serialNumber
         );
     }
 
