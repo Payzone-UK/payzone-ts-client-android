@@ -180,55 +180,6 @@ public class ApiClient extends Handler {
                 "");
     }
 
-    public boolean nspHotcard(JSONObject jsonParams) {
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_NSP_HOT_CARD,
-                MessageConstants.RESP_QUANTUM_NSP_HOT_CARD,
-                jsonParams.toString()
-        );
-    }
-    public boolean securityKeys(JSONObject jsonParams) {
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_SECURITY_KEYS,
-                MessageConstants.RESP_QUANTUM_SECURITY_KEYS,
-                jsonParams.toString()
-        );
-    }
-    public boolean localSecretCode(JSONObject jsonParams) {
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_LOCAL_SECRET_CODE,
-                MessageConstants.RESP_QUANTUM_LOCAL_SECRET_CODE,
-                jsonParams.toString()
-        );
-    }
-    public boolean csRegional(JSONObject jsonParams) {
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_CS_REGIONAL,
-                MessageConstants.RESP_QUANTUM_CS_REGIONAL,
-                jsonParams.toString()
-        );
-    }
-    public boolean quantumTransactionComplete(JSONObject jsonParams) {
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_TRANSACTION_COMPLETE,
-                MessageConstants.RESP_QUANTUM_TRANSACTION_COMPLETE,
-                jsonParams.toString()
-        );
-    }
-    public boolean quantumRtiTransaction(JSONObject jsonParams) {
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_RTI,
-                MessageConstants.RESP_QUANTUM_RTI,
-                jsonParams.toString()
-        );
-    }
-    public boolean sale(JSONObject jsonParams) {
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_SALE,
-                MessageConstants.RESP_QUANTUM_SALE,
-                jsonParams.toString()
-        );
-    }
     public static String decompressData(String zipText) {
         String sReturn = "";
         try {
