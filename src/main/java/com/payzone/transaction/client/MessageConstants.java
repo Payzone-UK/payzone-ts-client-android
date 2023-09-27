@@ -13,13 +13,6 @@ public class MessageConstants {
     public static final int MSG_START_SESSION = 8;
     public static final int MSG_STORE_CID = 9;
     public static final int MSG_IS_TRANSACTION_READY = 10;
-    public static final int MSG_QUANTUM_SALE = 17;
-    public static final int MSG_QUANTUM_SECURITY_KEYS = 18;
-    public static final int MSG_QUANTUM_LOCAL_SECRET_CODE = 19;
-    public static final int MSG_QUANTUM_NSP_HOT_CARD = 20;
-    public static final int MSG_QUANTUM_CS_REGIONAL = 21;
-    public static final int MSG_QUANTUM_TRANSACTION_COMPLETE = 22;
-    public static final int MSG_QUANTUM_RTI = 23;
 
     // Parameter KEYS FOR
     public static final String RESP_CONFIG_SETUP = "configSetup";
@@ -33,11 +26,4 @@ public class MessageConstants {
     public static final String RESP_START_SESSION = "startSession";
     public static final String RESP_STORE_CID = "storeCid";
     public static final String RESP_IS_TRANSACTION_READY = "isTransactionReady";
-    public static final String RESP_QUANTUM_SALE = "sale";
-    public static final String RESP_QUANTUM_SECURITY_KEYS = "securityKeys";
-    public static final String RESP_QUANTUM_LOCAL_SECRET_CODE = "localSecretCode";
-    public static final String RESP_QUANTUM_NSP_HOT_CARD = "nspHotcard";
-    public static final String RESP_QUANTUM_CS_REGIONAL = "csRegional";
-    public static final String RESP_QUANTUM_TRANSACTION_COMPLETE = "quantumTransactionComplete";
-    public static final String RESP_QUANTUM_RTI = "quantumRti";
 }
