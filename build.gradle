@@ -26,7 +26,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 def getVersionName = { ->
-    return "0.1.5"  // Replace with version Name
+    return "0.1.7"  // Replace with version Name
 }
 def getArtificatId = { ->
     return "payzone-ts-client-android" // Replace with library name ID
