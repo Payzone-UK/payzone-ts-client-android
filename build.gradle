@@ -25,6 +25,15 @@ allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
+def getVersionName = { ->
+    return "0.1.5"  // Replace with version Name
+}
+def getArtificatId = { ->
+    return "payzone-ts-client-android" // Replace with library name ID
+}
+def getOutputFileName = { ->
+    return "${getArtificatId()}-${getVersionName()}"
+}
 android {
     compileSdkVersion 30
 
@@ -32,10 +41,11 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName getVersionName()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+        archivesBaseName = getOutputFileName()
     }
 
     buildTypes {
@@ -65,27 +75,22 @@ dependencies {
     testImplementation 'androidx.test:core:1.0.0'
     // Optional -- Mockito framework
     testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation project(path: ':')
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'junit:junit:4.12'
-    androidTestImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 def githubProperties = new Properties()
 githubProperties.load(new FileInputStream(rootProject.file("github.properties")))
-def getVersionName = { ->
-    return "0.1.5"  // Replace with version Name
-}
-def getArtificatId = { ->
-    return "payzone-ts-client-android" // Replace with library name ID
-}
+
 publishing {
     publications {
         bar(MavenPublication) {
             groupId 'com.payzone.transaction.client' // Replace with group ID
             artifactId getArtificatId()
             version getVersionName()
-            artifact("$buildDir/outputs/aar/${getArtificatId()}-release.aar")
+            artifact("$buildDir/outputs/aar/${getOutputFileName()}-release.aar")
         }
     }
 
