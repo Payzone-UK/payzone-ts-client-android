@@ -38,6 +38,26 @@ public class MessageResponseHandler extends Handler {
                 response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_MARK_RECEIPT_PRINTED));
                 System.out.println("## Marked Receipt Printed Response = "+response);
                 break;
+            case MessageConstants.MSG_TALEXUS_READ_KEY:
+                response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_READ_KEY));
+                System.out.println("## Talexus Read key = " + response);
+                break;
+            case MessageConstants.MSG_TALEXUS_ADD_CREDIT:
+                response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_ADD_CREDIT));
+                System.out.println("## Talexus add credit Response = " + response);
+                break;
+            case MessageConstants.MSG_TALEXUS_RTI:
+                response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_RTI));
+                System.out.println("## Talexus rti Response = " + response);
+                break;
+            case MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED:
+                response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED));
+                System.out.println("## Talexus key inserted Response = " + response);
+                break;
+            case MessageConstants.MSG_TALEXUS_REVERSE_CREDIT:
+                response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_REVERSE_CREDIT));
+                System.out.println("## Talexus Reversal Response = " + response);
+                break;
             default:
                 super.handleMessage(msg);
         }
