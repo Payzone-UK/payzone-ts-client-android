@@ -1,7 +1,6 @@
 package com.payzone.transaction.client;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.test.mock.MockContext;
@@ -122,6 +121,39 @@ public class ApiClientUnitTest {
     @Test
     public void isTransactionReady() {
         assertEquals(false, apiClient.isTransactionReady());
+    }
+
+    @Test
+    public void readKey() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.readKey());
+    }
+
+    @Test
+    public void addCredit() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.addCredit(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.addCredit(null);});
+    }
+
+    @Test
+    public void rti() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.rti(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.rti(null);});
+    }
+
+    @Test
+    public void isKeyInserted() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.isKeyInserted());
+    }
+  
+    @Test
+    public void reversal() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.reversal(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.reversal(null);});
     }
 
     @Test

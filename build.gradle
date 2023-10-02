@@ -2,11 +2,9 @@ buildscript {
     repositories {
         mavenCentral()
         google()
-        jcenter()
-
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.2'
+        classpath 'com.android.tools.build:gradle:3.5.4'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -17,8 +15,6 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        jcenter()
-
     }
 }
 
@@ -26,7 +22,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 def getVersionName = { ->
-    return "0.1.7"  // Replace with version Name
+    return "0.1.8"  // Replace with version Name
 }
 def getArtificatId = { ->
     return "payzone-ts-client-android" // Replace with library name ID
