@@ -19,6 +19,13 @@ public class MessageConstants {
     public static final int MSG_TALEXUS_RTI = 14;
     public static final int MSG_TALEXUS_IS_KEY_INSERTED = 15;
     public static final int MSG_TALEXUS_REVERSE_CREDIT = 16;
+    public static final int MSG_QUANTUM_SALE = 17;
+    public static final int MSG_QUANTUM_SECURITY_KEYS = 18;
+    public static final int MSG_QUANTUM_LOCAL_SECRET_CODE = 19;
+    public static final int MSG_QUANTUM_NSP_HOT_CARD = 20;
+    public static final int MSG_QUANTUM_CS_REGIONAL = 21;
+    public static final int MSG_QUANTUM_TRANSACTION_COMPLETE = 22;
+    public static final int MSG_QUANTUM_RTI = 23;
 
     // Parameter KEYS FOR
     public static final String RESP_CONFIG_SETUP = "configSetup";
@@ -38,8 +45,13 @@ public class MessageConstants {
     public static final String RESP_TALEXUS_RTI = "rti";
     public static final String RESP_TALEXUS_IS_KEY_INSERTED = "isKeyInserted";
     public static final String RESP_TALEXUS_REVERSE_CREDIT = "reversal";
-
     // Intent actions to receive the broadcasts
     public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
-
+    public static final String RESP_QUANTUM_SALE = "sale";
+    public static final String RESP_QUANTUM_SECURITY_KEYS = "securityKeys";
+    public static final String RESP_QUANTUM_LOCAL_SECRET_CODE = "localSecretCode";
+    public static final String RESP_QUANTUM_NSP_HOT_CARD = "nspHotcard";
+    public static final String RESP_QUANTUM_CS_REGIONAL = "csRegional";
+    public static final String RESP_QUANTUM_TRANSACTION_COMPLETE = "quantumTransactionComplete";
+    public static final String RESP_QUANTUM_RTI = "quantumRti";
 }

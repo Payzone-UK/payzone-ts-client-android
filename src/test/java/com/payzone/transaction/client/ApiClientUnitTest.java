@@ -148,10 +148,74 @@ public class ApiClientUnitTest {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.isKeyInserted());
     }
+  
     @Test
     public void reversal() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.reversal(obj));
         assertThrows(NullPointerException.class, () -> { apiClient.reversal(null);});
+    }
+
+    @Test
+    public void nspHotcard() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.nspHotcard(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.nspHotcard(null);
+        });
+    }
+
+    @Test
+    public void securityKeys() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.securityKeys(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.securityKeys(null);
+        });
+    }
+
+    @Test
+    public void localSecretCode() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.localSecretCode(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.localSecretCode(null);
+        });
+    }
+
+    @Test
+    public void csRegional() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.csRegional(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.csRegional(null);
+        });
+    }
+
+    @Test
+    public void quantumTransactionComplete() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.quantumTransactionComplete(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.quantumTransactionComplete(null);
+        });
+    }
+
+    @Test
+    public void quantumRtiTransaction() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.quantumRtiTransaction(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.quantumRtiTransaction(null);
+        });
+    }
+
+    @Test
+    public void sale() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.sale(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.sale(null);
+        });
     }
 }
