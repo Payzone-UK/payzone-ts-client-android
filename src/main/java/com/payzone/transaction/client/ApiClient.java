@@ -34,6 +34,8 @@ public class ApiClient extends Handler {
     public boolean mBound = false;
     private ServiceConnection mConnection;
 
+    public int retry = 0;
+
     public ApiClient(Context ctx, Messenger messenger) {
         this.ctx = ctx;
         if(messenger != null) {
@@ -72,6 +74,17 @@ public class ApiClient extends Handler {
                         "com.payzone.transaction.services.TransactionService"));
         boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         System.out.println("## Binding in progress: "+ bindResult);
+    }
+
+    /**
+     * To destroy the service. Bringing back this for backward compatibility
+     */
+    public boolean destroyService(){
+        if (mBound) {
+            ctx.unbindService(mConnection);
+            mBound = false;
+        }
+        return true;
     }
 
     public void fetchConfigData() {
@@ -299,6 +312,7 @@ public class ApiClient extends Handler {
 
     private boolean sendMessage(int request, String responseKey, String payload) {
         // Create and send a message to the service, using a supported 'what' value
+        retry = 0;
         return postDelayed(new Runnable() {
             public void run() {
                 long currentTime = System.currentTimeMillis();
@@ -323,12 +337,15 @@ public class ApiClient extends Handler {
                         currentTime = System.currentTimeMillis();
                     }
                     if (!mBound) {
-                        throw new RuntimeException("## No Bindings with Transaction service.");
+                        retry++;
+                        if(retry < 5) {
+                            Thread.sleep(1000);
+                            run();
+                        }
                     }
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
                 }
-
+                catch (RemoteException e) {}
+                catch (InterruptedException e) {}
             }
         }, 1000);
     }

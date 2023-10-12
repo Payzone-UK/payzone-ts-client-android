@@ -46,8 +46,6 @@ public class MessageConstants {
     public static final String RESP_TALEXUS_IS_KEY_INSERTED = "isKeyInserted";
     public static final String RESP_TALEXUS_REVERSE_CREDIT = "reversal";
     public static final String RESP_TALEXUS_BOX_STATUS = "talexusBoxConnected";
-    // Intent actions to receive the broadcasts
-    public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
     public static final String RESP_QUANTUM_SALE = "sale";
     public static final String RESP_QUANTUM_SECURITY_KEYS = "securityKeys";
     public static final String RESP_QUANTUM_LOCAL_SECRET_CODE = "localSecretCode";
@@ -55,4 +53,9 @@ public class MessageConstants {
     public static final String RESP_QUANTUM_CS_REGIONAL = "csRegional";
     public static final String RESP_QUANTUM_TRANSACTION_COMPLETE = "quantumTransactionComplete";
     public static final String RESP_QUANTUM_RTI = "quantumRti";
+
+    // Intent actions to receive the broadcasts
+    public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
+    public static final String ACTION_TALEXUS_BOX_STATUS = "talexus.box.connected";
+
 }
