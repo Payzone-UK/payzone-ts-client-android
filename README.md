@@ -1,6 +1,7 @@
 # Payzone Transaction Service API Client For Android
 
-This is the client library for interacting with the Payzone Transaction Service component.
+This is the client library for interacting with the Payzone Transaction Service component. 
+Note :- If the project's target SDK is higher than API 29 and above use 0.1.8 
 
 ## Defined Methods
 
@@ -85,6 +86,19 @@ This is the client library for interacting with the Payzone Transaction Service 
 
     
     registerReceiver(mHandleMessageReceiver, new IntentFilter(MessageConstants.ACTION_KEY_INSERTED));
+
+Register a broadcast receiver to receive the Talexus box status(connected/disconnected)
+
+    private final BroadcastReceiver mHandleBoxStatusMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boolean isBoxConnected = intent.getExtras().getBoolean(MessageConstants.RESP_TALEXUS_BOX_STATUS);
+            //Perform the actions
+        }
+    };
+
+    
+    registerReceiver(mHandleBoxStatusMessageReceiver, new IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS));
 
 
 
