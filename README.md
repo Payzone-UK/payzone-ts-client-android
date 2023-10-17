@@ -23,6 +23,7 @@ Note :- If the project's target SDK is higher than API 29 and above use 0.1.8
 - addCredit
 - rti
 - isKeyInserted
+- isBoxConnected
 - reversal
 
 <br/>
@@ -414,10 +415,18 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.isKeyInserted();
     System.out.println("## Is talexus key inserted: " + success);
 
-    Reseponse:-
+    This will return the status true/false
      
-     {"success":true,"keyInserted":true}
-     
+</details>
+<details>
+  <summary>isBoxConnected - Check if talexus box is connected </summary>
+  <br>
+
+    boolean success =  apiClient.isBoxConnected();
+    System.out.println("## Is talexus key inserted: " + success);
+
+    This will return the status true/false
+
 </details>
 <details>
   <summary>reversal - Reverse the last transaction </summary>
