@@ -2,7 +2,7 @@ name: Release Candidate
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "test/**" ]
 jobs:
   publish_aar:
 
@@ -71,4 +71,6 @@ jobs:
           asset_name: ${{env.APP_NAME}}
           asset_content_type: application/zip
       - name: Publish package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew publish
