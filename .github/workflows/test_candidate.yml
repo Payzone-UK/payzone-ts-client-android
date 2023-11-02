@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "::set-output name=branch::$(echo ${GITHUB_REF##*/})"
       - name: Build with Gradle
-        run: ./gradlew build -PverName=${{steps.extract_branch.outputs.branch}} clean build
+        run: ./gradlew -PverName=${{steps.extract_branch.outputs.branch}} clean build
       - name: Set App name
         run: |
           echo "APP_NAME=$(basename  `ls build/outputs/aar/*debug.aar | head -n 1`)" >> $GITHUB_ENV
