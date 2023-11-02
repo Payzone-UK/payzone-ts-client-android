@@ -1,8 +1,10 @@
 package com.payzone.transaction.client;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +35,21 @@ public class ApiClient extends Handler {
     //boolean variable to keep a check on service bind and unbind event
     public boolean mBound = false;
     private ServiceConnection mConnection;
+    public boolean isKeyInserted = false;
+    public boolean isBoxConnected = false;
+    public int retry = 0;
+    final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            isKeyInserted = intent.getExtras().getBoolean(MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED);
+        }
+    };
+    private final BroadcastReceiver mHandleBoxStatusMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            isBoxConnected = intent.getExtras().getBoolean(MessageConstants.RESP_TALEXUS_BOX_STATUS);
+        }
+    };
 
     public ApiClient(Context ctx, Messenger messenger) {
         this.ctx = ctx;
@@ -66,12 +83,27 @@ public class ApiClient extends Handler {
     }
 
     public void initService() {
+        ctx.registerReceiver(mHandleMessageReceiver, new IntentFilter(MessageConstants.ACTION_KEY_INSERTED));
+        ctx.registerReceiver(mHandleBoxStatusMessageReceiver, new IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS));
         Intent intent = new Intent();
         intent.setComponent(
                 new ComponentName("com.payzone.transaction",
                         "com.payzone.transaction.services.TransactionService"));
         boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         System.out.println("## Binding in progress: "+ bindResult);
+    }
+
+    /**
+     * To destroy the service. Bringing back this for backward compatibility
+     */
+    public boolean destroyService(){
+        ctx.unregisterReceiver(mHandleMessageReceiver);
+        ctx.unregisterReceiver(mHandleBoxStatusMessageReceiver);
+        if (mBound) {
+            ctx.unbindService(mConnection);
+            mBound = false;
+        }
+        return true;
     }
 
     public void fetchConfigData() {
@@ -208,12 +240,13 @@ public class ApiClient extends Handler {
     }
 
     public boolean isKeyInserted() {
-        return sendMessage(
-                MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED,
-                MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED,
-                ""
-        );
+        return isKeyInserted;
     }
+
+    public boolean isBoxConnected() {
+        return isBoxConnected;
+    }
+
     public boolean reversal(JSONObject jsonParams) {
         return sendMessage(
                 MessageConstants.MSG_TALEXUS_REVERSE_CREDIT,
@@ -299,6 +332,7 @@ public class ApiClient extends Handler {
 
     private boolean sendMessage(int request, String responseKey, String payload) {
         // Create and send a message to the service, using a supported 'what' value
+        retry = 0;
         return postDelayed(new Runnable() {
             public void run() {
                 long currentTime = System.currentTimeMillis();
@@ -323,12 +357,15 @@ public class ApiClient extends Handler {
                         currentTime = System.currentTimeMillis();
                     }
                     if (!mBound) {
-                        throw new RuntimeException("## No Bindings with Transaction service.");
+                        retry++;
+                        if(retry < 5) {
+                            Thread.sleep(1000);
+                            run();
+                        }
                     }
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
                 }
-
+                catch (RemoteException e) {}
+                catch (InterruptedException e) {}
             }
         }, 1000);
     }
