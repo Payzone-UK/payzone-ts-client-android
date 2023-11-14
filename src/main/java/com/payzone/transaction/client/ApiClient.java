@@ -35,8 +35,8 @@ public class ApiClient extends Handler {
     //boolean variable to keep a check on service bind and unbind event
     public boolean mBound = false;
     private ServiceConnection mConnection;
-    public boolean isKeyInserted = false;
-    public boolean isBoxConnected = false;
+    private boolean isKeyInserted = false;
+    private boolean isBoxConnected = false;
     public int retry = 0;
     final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -240,11 +240,19 @@ public class ApiClient extends Handler {
     }
 
     public boolean isKeyInserted() {
-        return isKeyInserted;
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED,
+                MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED,
+                ""
+        );
     }
 
     public boolean isBoxConnected() {
-        return isBoxConnected;
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_BOX_CONNECTED,
+                MessageConstants.RESP_TALEXUS_BOX_STATUS,
+                ""
+        );
     }
 
     public boolean reversal(JSONObject jsonParams) {

@@ -19,6 +19,7 @@ public class MessageConstants {
     public static final int MSG_TALEXUS_RTI = 14;
     public static final int MSG_TALEXUS_IS_KEY_INSERTED = 15;
     public static final int MSG_TALEXUS_REVERSE_CREDIT = 16;
+    public static final int MSG_TALEXUS_BOX_CONNECTED = 24;
     public static final int MSG_QUANTUM_SALE = 17;
     public static final int MSG_QUANTUM_SECURITY_KEYS = 18;
     public static final int MSG_QUANTUM_LOCAL_SECRET_CODE = 19;
