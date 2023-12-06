@@ -27,14 +27,14 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
       - name: Upload test report directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: TestResults
           path: build/reports/tests/testDebugUnitTest/
       - name: Run lint
         run: ./gradlew lint
       - name: Upload lint report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: LintResult
           path: build/reports/lint-results*.html
@@ -71,4 +71,6 @@ jobs:
           asset_name: ${{env.APP_NAME}}
           asset_content_type: application/zip
       - name: Publish package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew publish
