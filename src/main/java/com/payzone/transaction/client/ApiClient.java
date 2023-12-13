@@ -312,6 +312,20 @@ public class ApiClient extends Handler {
                 jsonParams.toString()
         );
     }
+    public boolean openBasket(String basketId) {
+        return sendMessage(
+                MessageConstants.MSG_OPEN_BASKET,
+                MessageConstants.RESP_OPEN_BASKET,
+                basketId
+        );
+    }
+    public boolean closeBasket(String basketId) {
+        return sendMessage(
+                MessageConstants.MSG_CLOSE_BASKET,
+                MessageConstants.RESP_CLOSE_BASKET,
+                basketId
+        );
+    }
     public static String decompressData(String zipText) {
         String sReturn = "";
         try {

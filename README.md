@@ -26,6 +26,9 @@ Note :- If the project's target SDK is higher than API 29 and above use 0.1.8
 - isBoxConnected
 - reversal
 
+- openBasket
+- closeBasket
+
 <br/>
 
 ## Usage
@@ -415,7 +418,9 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.isKeyInserted();
     System.out.println("## Is talexus key inserted: " + success);
 
-    This will return the status true/false
+     Reseponse:-
+    {"success":true,"isKeyInserted":true/false}
+}
      
 </details>
 <details>
@@ -425,7 +430,8 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.isBoxConnected();
     System.out.println("## Is talexus key inserted: " + success);
 
-    This will return the status true/false
+     Reseponse:-
+    {"success":true,"isBoxConnected":true/false}
 
 </details>
 <details>
@@ -462,5 +468,26 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
         }
     }
 
+
+</details>
+<details>
+  <summary>openBasket - To create a basket entry</summary>
+  <br>
+
+    boolean success =  apiClient.openBasket(basketId);
+    Reseponse:-
+    {
+      "success": true,
+      "id": "1222"
+    }
+
+</details>
+
+<details>
+  <summary>openBasket - To close the basket</summary>
+  <br>
+
+    The response id received for opening the basket
+    boolean success =  apiClient.openBasket(id);
 
 </details>
