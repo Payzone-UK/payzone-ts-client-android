@@ -28,30 +28,30 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
       - name: Upload test report directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: TestResults
           path: build/reports/tests/testDebugUnitTest/
       - name: Run lint
         run: ./gradlew lint
       - name: Upload lint report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: LintResult
           path: build/reports/lint-results*.html
       - name: Get branch name
         id: extract_branch
         run: |
-          echo "::set-output name=branch::$(echo ${GITHUB_REF##*/})"
+          echo "branch=$(echo ${GITHUB_REF##*/})" >>$GITHUB_OUTPUT
       - name: Build with Gradle
-        run: ./gradlew build -PverName=${{steps.extract_branch.outputs.branch}} clean build
+        run: ./gradlew -PverName=${{steps.extract_branch.outputs.branch}} clean build
       - name: Set App name
         run: |
           echo "APP_NAME=$(basename  `ls build/outputs/aar/*debug.aar | head -n 1`)" >> $GITHUB_ENV
         id:
           app_name
       - name: Upload package
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: ${{env.APP_NAME}}
           path: build/outputs/aar/${{env.APP_NAME}}
