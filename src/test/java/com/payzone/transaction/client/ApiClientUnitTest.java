@@ -218,4 +218,15 @@ public class ApiClientUnitTest {
             apiClient.sale(null);
         });
     }
+    @Test
+    public void openBasket() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.openBasket("123456-121"));
+    }
+
+    @Test
+    public void closeBasket() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.closeBasket("12345"));
+    }
 }
