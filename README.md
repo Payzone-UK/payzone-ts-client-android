@@ -331,7 +331,7 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.readKey();
     System.out.println("## Read talexus key: " + success);
     
-    Reseponse:-
+    Response:-
     {
       "success": true,
       "keyImage": "333346574081DDBD0004926E120600AF000A47340000D3AC41E5FFAB4070C140990B440EC800840E040E040E040E040E040E040E040E440E040E440E040E040E22010100261E0D07000000000000395A000000000000000000000000800000180000000000005FE30000000000000000000000000000000000000000000056BC",
@@ -377,7 +377,7 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.addCredit(obj);
     System.out.println("## Talexus add credit: "+success);
 
-    Reseponse:-
+    Response:-
     {
       "success": true,
       "transactionGuid": "e9d8ec0a-604f-4a1d-bc0f-dac6d1631817",
@@ -400,7 +400,7 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.rti(obj);
     System.out.println("## Talexus add credit: "+success);
 
-    Reseponse:-
+    Response:-
     {
       "success": true,
       "transactionGuid": "aa204f2a-9eb0-43d1-a7e2-e00de5372eb8",
@@ -418,7 +418,7 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.isKeyInserted();
     System.out.println("## Is talexus key inserted: " + success);
 
-     Reseponse:-
+     Response:-
     {"success":true,"isKeyInserted":true/false}
 }
      
@@ -430,7 +430,7 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.isBoxConnected();
     System.out.println("## Is talexus key inserted: " + success);
 
-     Reseponse:-
+     Response:-
     {"success":true,"isBoxConnected":true/false}
 
 </details>
@@ -444,7 +444,7 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
     boolean success =  apiClient.reversal(obj);
     System.out.println("## Talexus reversal: "+success);
 
-    Reseponse:-
+    Response:-
     {
       "success": true,
       "transactionGuid": "aa204f2a-9eb0-43d1-a7e2-e00de5372eb8",
@@ -475,7 +475,7 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
   <br>
 
     boolean success =  apiClient.openBasket(basketId);
-    Reseponse:-
+    Response:-
     {
       "success": true,
       "id": "1222"
