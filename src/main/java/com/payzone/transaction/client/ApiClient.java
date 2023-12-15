@@ -35,8 +35,8 @@ public class ApiClient extends Handler {
     //boolean variable to keep a check on service bind and unbind event
     public boolean mBound = false;
     private ServiceConnection mConnection;
-    public boolean isKeyInserted = false;
-    public boolean isBoxConnected = false;
+    private boolean isKeyInserted = false;
+    private boolean isBoxConnected = false;
     public int retry = 0;
     final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -240,11 +240,19 @@ public class ApiClient extends Handler {
     }
 
     public boolean isKeyInserted() {
-        return isKeyInserted;
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED,
+                MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED,
+                ""
+        );
     }
 
     public boolean isBoxConnected() {
-        return isBoxConnected;
+        return sendMessage(
+                MessageConstants.MSG_TALEXUS_BOX_CONNECTED,
+                MessageConstants.RESP_TALEXUS_BOX_STATUS,
+                ""
+        );
     }
 
     public boolean reversal(JSONObject jsonParams) {
@@ -302,6 +310,20 @@ public class ApiClient extends Handler {
                 MessageConstants.MSG_QUANTUM_SALE,
                 MessageConstants.RESP_QUANTUM_SALE,
                 jsonParams.toString()
+        );
+    }
+    public boolean openBasket(String basketId) {
+        return sendMessage(
+                MessageConstants.MSG_OPEN_BASKET,
+                MessageConstants.RESP_OPEN_BASKET,
+                basketId
+        );
+    }
+    public boolean closeBasket(String basketId) {
+        return sendMessage(
+                MessageConstants.MSG_CLOSE_BASKET,
+                MessageConstants.RESP_CLOSE_BASKET,
+                basketId
         );
     }
     public static String decompressData(String zipText) {
