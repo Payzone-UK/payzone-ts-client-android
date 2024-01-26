@@ -41,6 +41,7 @@ public class ApiClientUnitTest {
         apiClient = new ApiClient(mContext, null);
         apiClient.initService();
         apiClient.fetchConfigData();
+        apiClient.initTalexus();
     }
 
     @Test

@@ -29,6 +29,8 @@ public class MessageConstants {
     public static final int MSG_QUANTUM_RTI = 23;
     public static final int MSG_OPEN_BASKET = 25;
     public static final int MSG_CLOSE_BASKET = 26;
+    public static final int MSG_INIT_TALEXUS = 27;
+    public static final int MSG_STOP_TALEXUS = 28;
     // Parameter KEYS FOR
     public static final String RESP_CONFIG_SETUP = "configSetup";
     public static final String RESP_REGISTER_DEVICE = "registerDevice";
@@ -57,6 +59,8 @@ public class MessageConstants {
     public static final String RESP_QUANTUM_RTI = "quantumRti";
     public static final String RESP_OPEN_BASKET = "openBasket";
     public static final String RESP_CLOSE_BASKET = "closeBasket";
+    public static final String RESP_INIT_TALEXUS = "initTalexus";
+    public static final String RESP_STOP_TALEXUS = "stopTalexus";
 
     // Intent actions to receive the broadcasts
     public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
