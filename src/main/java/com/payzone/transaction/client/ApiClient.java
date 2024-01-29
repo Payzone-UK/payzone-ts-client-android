@@ -119,6 +119,22 @@ public class ApiClient extends Handler {
         );
     }
 
+    public boolean initTalexus() {
+        return sendMessage(
+                MessageConstants.MSG_INIT_TALEXUS,
+                MessageConstants.RESP_INIT_TALEXUS,
+                ""
+        );
+    }
+
+    public boolean stopTalexus() {
+        return sendMessage(
+                MessageConstants.MSG_STOP_TALEXUS,
+                MessageConstants.RESP_STOP_TALEXUS,
+                ""
+        );
+    }
+
     public boolean registerDevice(JSONObject jsonParams) throws JSONException {
         JSONObject registerJsonObj = new JSONObject();
         registerJsonObj.put("terminal", jsonParams);

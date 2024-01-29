@@ -58,6 +58,14 @@ public class MessageResponseHandler extends Handler {
                 response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_REVERSE_CREDIT));
                 System.out.println("## Talexus Reversal Response = " + response);
                 break;
+            case MessageConstants.MSG_INIT_TALEXUS:
+                response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_INIT_TALEXUS));
+                System.out.println("## Talexus initialisation Response = " + response);
+                break;
+            case MessageConstants.MSG_STOP_TALEXUS:
+                response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_STOP_TALEXUS));
+                System.out.println("## Talexus stop Response = " + response);
+                break;
             default:
                 super.handleMessage(msg);
         }
