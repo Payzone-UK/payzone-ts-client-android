@@ -6,6 +6,8 @@ Note :- If the project's target SDK is higher than API 29 and above use 0.1.8
 ## Defined Methods
 
 - initService
+- initTalexus
+- stopTalexus
 - fetchConfigData
 - isTransactionReady
 - destroyService
@@ -127,6 +129,25 @@ Register a broadcast receiver to receive the Talexus box status(connected/discon
         apiClient = new ApiClient(getApplicationContext(), replyMessenger);
         apiClient.initService(); // Connects your app with the Payzone Transaction Service Component
     }
+
+
+</details>
+<hr/>
+
+<details>
+  <summary> initTalexus - Need to initialise the Talexus services for handling the talexus transactions</summary>
+  <br>
+
+    apiClient.initTalexus();
+
+</details>
+<hr/>
+
+<details>
+  <summary> stopTalexus - Recommended to close the talexus service while closing the app.</summary>
+  <br>
+
+    apiClient.stopTalexus();
 
 
 </details>
