@@ -145,6 +145,20 @@ public class ApiClientUnitTest {
     }
 
     @Test
+    public void pzAddCredit() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.pzAddCredit(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.addCredit(null);});
+    }
+
+    @Test
+    public void pzRti() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.pzRti(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.rti(null);});
+    }
+
+    @Test
     public void isKeyInserted() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.isKeyInserted());
