@@ -43,10 +43,12 @@ public class MessageResponseHandler extends Handler {
                 System.out.println("## Talexus Read key = " + response);
                 break;
             case MessageConstants.MSG_TALEXUS_ADD_CREDIT:
+            case MessageConstants.PZ_MSG_TALEXUS_ADD_CREDIT:
                 response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_ADD_CREDIT));
                 System.out.println("## Talexus add credit Response = " + response);
                 break;
             case MessageConstants.MSG_TALEXUS_RTI:
+            case MessageConstants.PZ_MSG_TALEXUS_RTI:
                 response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_TALEXUS_RTI));
                 System.out.println("## Talexus rti Response = " + response);
                 break;

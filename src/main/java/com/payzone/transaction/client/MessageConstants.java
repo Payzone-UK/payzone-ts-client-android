@@ -31,6 +31,9 @@ public class MessageConstants {
     public static final int MSG_CLOSE_BASKET = 26;
     public static final int MSG_INIT_TALEXUS = 27;
     public static final int MSG_STOP_TALEXUS = 28;
+    public static final int PZ_MSG_TALEXUS_ADD_CREDIT = 29;
+    public static final int PZ_MSG_TALEXUS_RTI = 30;
+
     // Parameter KEYS FOR
     public static final String RESP_CONFIG_SETUP = "configSetup";
     public static final String RESP_REGISTER_DEVICE = "registerDevice";
