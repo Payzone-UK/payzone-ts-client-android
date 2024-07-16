@@ -358,6 +358,23 @@ public class ApiClient extends Handler {
                 basketId
         );
     }
+
+    public boolean validateKeypadCode(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_VALIDATE_KEYPAD_CODE,
+                MessageConstants.RESP_VALIDATE_KEYPAD_CODE,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean keypadPurchase(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_KEYPAD_PURCHASE,
+                MessageConstants.RESP_KEYPAD_PURCHASE,
+                jsonParams.toString()
+        );
+    }
+
     public static String decompressData(String zipText) {
         String sReturn = "";
         try {
