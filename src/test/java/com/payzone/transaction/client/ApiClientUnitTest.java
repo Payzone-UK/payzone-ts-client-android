@@ -145,6 +145,20 @@ public class ApiClientUnitTest {
     }
 
     @Test
+    public void pzAddCredit() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.pzAddCredit(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.addCredit(null);});
+    }
+
+    @Test
+    public void pzRti() throws JSONException {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.pzRti(obj));
+        assertThrows(NullPointerException.class, () -> { apiClient.rti(null);});
+    }
+
+    @Test
     public void isKeyInserted() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.isKeyInserted());
@@ -229,5 +243,23 @@ public class ApiClientUnitTest {
     public void closeBasket() {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.closeBasket("12345"));
+    }
+
+    @Test
+    public void keypadPurchase() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.keypadPurchase(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.keypadPurchase(null);
+        });
+    }
+
+    @Test
+    public void validateKeypadCode() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.validateKeypadCode(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.validateKeypadCode(null);
+        });
     }
 }

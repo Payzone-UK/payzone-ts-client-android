@@ -31,6 +31,11 @@ public class MessageConstants {
     public static final int MSG_CLOSE_BASKET = 26;
     public static final int MSG_INIT_TALEXUS = 27;
     public static final int MSG_STOP_TALEXUS = 28;
+    public static final int PZ_MSG_TALEXUS_ADD_CREDIT = 29;
+    public static final int PZ_MSG_TALEXUS_RTI = 30;
+    public static final int MSG_VALIDATE_KEYPAD_CODE = 31;
+    public static final int MSG_KEYPAD_PURCHASE = 32;
+
     // Parameter KEYS FOR
     public static final String RESP_CONFIG_SETUP = "configSetup";
     public static final String RESP_REGISTER_DEVICE = "registerDevice";
@@ -61,6 +66,8 @@ public class MessageConstants {
     public static final String RESP_CLOSE_BASKET = "closeBasket";
     public static final String RESP_INIT_TALEXUS = "initTalexus";
     public static final String RESP_STOP_TALEXUS = "stopTalexus";
+    public static final String RESP_VALIDATE_KEYPAD_CODE = "validateKeypadCode";
+    public static final String RESP_KEYPAD_PURCHASE = "keypadPurchase";
 
     // Intent actions to receive the broadcasts
     public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";

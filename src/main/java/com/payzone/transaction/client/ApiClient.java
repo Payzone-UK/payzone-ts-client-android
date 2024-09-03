@@ -255,6 +255,22 @@ public class ApiClient extends Handler {
         );
     }
 
+    public boolean pzAddCredit(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.PZ_MSG_TALEXUS_ADD_CREDIT,
+                MessageConstants.RESP_TALEXUS_ADD_CREDIT,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean pzRti(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.PZ_MSG_TALEXUS_RTI,
+                MessageConstants.RESP_TALEXUS_RTI,
+                jsonParams.toString()
+        );
+    }
+
     public boolean isKeyInserted() {
         return sendMessage(
                 MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED,
@@ -342,6 +358,23 @@ public class ApiClient extends Handler {
                 basketId
         );
     }
+
+    public boolean validateKeypadCode(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_VALIDATE_KEYPAD_CODE,
+                MessageConstants.RESP_VALIDATE_KEYPAD_CODE,
+                jsonParams.toString()
+        );
+    }
+
+    public boolean keypadPurchase(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_KEYPAD_PURCHASE,
+                MessageConstants.RESP_KEYPAD_PURCHASE,
+                jsonParams.toString()
+        );
+    }
+
     public static String decompressData(String zipText) {
         String sReturn = "";
         try {
