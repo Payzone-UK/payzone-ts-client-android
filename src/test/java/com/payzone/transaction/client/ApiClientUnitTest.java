@@ -244,4 +244,22 @@ public class ApiClientUnitTest {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.closeBasket("12345"));
     }
+
+    @Test
+    public void keypadPurchase() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.keypadPurchase(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.keypadPurchase(null);
+        });
+    }
+
+    @Test
+    public void validateKeypadCode() {
+        JSONObject obj = new JSONObject();
+        assertEquals(false, apiClient.validateKeypadCode(obj));
+        assertThrows(NullPointerException.class, () -> {
+            apiClient.validateKeypadCode(null);
+        });
+    }
 }
