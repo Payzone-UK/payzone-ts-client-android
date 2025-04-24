@@ -359,6 +359,14 @@ public class ApiClient extends Handler {
         );
     }
 
+    public boolean getBasket(String basketId) {
+        return sendMessage(
+                MessageConstants.MSG_GET_BASKET,
+                MessageConstants.RESP_GET_BASKET,
+                basketId
+        );
+    }
+
     public boolean validateKeypadCode(JSONObject jsonParams) {
         return sendMessage(
                 MessageConstants.MSG_VALIDATE_KEYPAD_CODE,
