@@ -374,6 +374,27 @@ public class ApiClient extends Handler {
                 jsonParams.toString()
         );
     }
+    public boolean epayVariants(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_EPAY_VARIANTS,
+                MessageConstants.RESP_EPAY_VARIANTS,
+                jsonParams.toString()
+        );
+    }
+    public boolean epayPurchase(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_EPAY_PURCHASE,
+                MessageConstants.RESP_EPAY_PURCHASE,
+                jsonParams.toString()
+        );
+    }
+    public boolean storeMerchantId(String mid) {
+        return sendMessage(
+                MessageConstants.MSG_STORE_MID,
+                MessageConstants.RESP_STORE_MID,
+                mid
+        );
+    }
 
     public static String decompressData(String zipText) {
         String sReturn = "";

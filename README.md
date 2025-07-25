@@ -16,6 +16,7 @@ Note :- If the project's target SDK is higher than API 29 and above use 0.1.8
 - getTokenBySerialNumber
 - startSession
 - storeCashierId
+- storeMerchantId
 - initTransaction
 - completeTransaction
 - markTransactionSuccess
@@ -33,6 +34,8 @@ Note :- If the project's target SDK is higher than API 29 and above use 0.1.8
 - addCredit
 - rti
 
+-epayPurchase
+-epayVariants
 <br/>
 
 ## Usage
