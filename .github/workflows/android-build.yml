@@ -16,6 +16,11 @@ on:
         required: false
         type: boolean
         default: false
+      create_release:
+        description: 'Whether to create the release tag'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -57,8 +62,10 @@ jobs:
           path: build/reports/lint-results*.html
 
       - name: Build with Gradle
+        if: ${{ inputs.upload_artifacts == true }}
         run: |
           BUILD_TYPE_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${INPUT_BUILD_TYPE:0:1})${INPUT_BUILD_TYPE:1}"
+          echo ${{ inputs.version_name }}
           if [ -n "${{ inputs.version_name }}" ]; then
             ./gradlew -PverName=${{ inputs.version_name }} clean assemble${BUILD_TYPE_CAP}
           else
@@ -67,9 +74,13 @@ jobs:
         env:
           INPUT_BUILD_TYPE: ${{ inputs.build_type }}
       - name: Set App name
+        if: ${{ inputs.upload_artifacts == true }}
         run: |
           APP_NAME=$(basename $(ls build/outputs/aar/*${{ inputs.build_type }}.aar | head -n 1))
+          echo "Detected AAR file: $APP_NAME"
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+        env:
+          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
 
       - name: Upload package
         if: ${{ inputs.upload_artifacts == true }}
@@ -77,3 +88,38 @@ jobs:
         with:
           name: ${{ env.APP_NAME }}
           path: build/outputs/aar/${{ env.APP_NAME }}
+
+      - name: Retrieve Version name
+        if: ${{ inputs.create_release == true }}
+        id: app_version
+        run: |
+          VERSION_NAME=$(./gradlew -q versionName)
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "::set-output name=VERSION_NAME::$VERSION_NAME"
+
+      - name: Create Release
+        if: ${{ inputs.create_release == true }}
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v.${{ env.VERSION_NAME }}
+          release_name: Release ${{ env.VERSION_NAME }}
+
+      - name: Upload Release Package
+        if: ${{ inputs.create_release == true }}
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/outputs/aar/${{ env.APP_NAME }}
+          asset_name: ${{ env.APP_NAME }}
+          asset_content_type: application/zip
+
+      - name: Publish package
+        if: ${{ inputs.create_release == true }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew publish
