@@ -58,12 +58,14 @@ jobs:
 
       - name: Build with Gradle
         run: |
+          BUILD_TYPE_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${INPUT_BUILD_TYPE:0:1})${INPUT_BUILD_TYPE:1}"
           if [ -n "${{ inputs.version_name }}" ]; then
-            ./gradlew -PverName=${{ inputs.version_name }} clean assemble${{ inputs.build_type | title }}
+            ./gradlew -PverName=${{ inputs.version_name }} clean assemble${BUILD_TYPE_CAP}
           else
-            ./gradlew clean assemble${{ inputs.build_type | title }}
+            ./gradlew clean assemble${BUILD_TYPE_CAP}
           fi
-
+        env:
+          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
       - name: Set App name
         run: |
           APP_NAME=$(basename $(ls build/outputs/aar/*${{ inputs.build_type }}.aar | head -n 1))
