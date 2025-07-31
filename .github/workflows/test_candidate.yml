@@ -1,24 +1,24 @@
-name: Test Candidate
-
-on:
-  push:
-    branches:
-      - 'test/**'
-
-jobs:
-  extract_branch:
-    runs-on: ubuntu-latest
-    outputs:
-      branch: ${{ steps.extract_branch_name.outputs.branch }}
-    steps:
-      - id: extract_branch_name
-        run: |
-          echo "branch=$(echo ${GITHUB_REF##*/})" >>$GITHUB_OUTPUT
-
-  build_aar:
-      needs: extract_branch
-      uses: ./.github/workflows/android-build.yml
-      with:
-        build_type: debug
-        version_name: ${{ needs.extract_branch.outputs.branch }}
-        upload_artifacts: true
+#name: Test Candidate
+#
+#on:
+#  push:
+#    branches:
+#      - 'test/**'
+#
+#jobs:
+#  extract_branch:
+#    runs-on: ubuntu-latest
+#    outputs:
+#      branch: ${{ steps.extract_branch_name.outputs.branch }}
+#    steps:
+#      - id: extract_branch_name
+#        run: |
+#          echo "branch=$(echo ${GITHUB_REF##*/})" >>$GITHUB_OUTPUT
+#
+#  build_aar:
+#      needs: extract_branch
+#      uses: ./.github/workflows/android-build.yml
+#      with:
+#        build_type: debug
+#        version_name: ${{ needs.extract_branch.outputs.branch }}
+#        upload_artifacts: true
