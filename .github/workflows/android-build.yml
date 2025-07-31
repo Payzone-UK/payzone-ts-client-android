@@ -1,29 +1,18 @@
-name: Android Build
+name: Android Build and Release
 
 on:
-  workflow_call:
-    inputs:
-      build_type:
-        description: 'Build type: debug or release'
-        required: true
-        type: string
-      version_name:
-        description: 'Version name for the build'
-        required: false
-        type: string
-      upload_artifacts:
-        description: 'Whether to upload built artifacts'
-        required: false
-        type: boolean
-        default: false
-      create_release:
-        description: 'Whether to create the release tag'
-        required: false
-        type: boolean
-        default: false
+  push:
+    branches:
+      - main
+      - master
+      - "test/**"
+
+  pull_request:
+    branches:
+      - develop
 
 jobs:
-  build:
+  android_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -61,65 +50,107 @@ jobs:
           name: LintResult
           path: build/reports/lint-results*.html
 
-      - name: Build with Gradle
-        if: ${{ inputs.upload_artifacts == true }}
-        run: |
-          BUILD_TYPE_CAP="$(tr '[:lower:]' '[:upper:]' <<< ${INPUT_BUILD_TYPE:0:1})${INPUT_BUILD_TYPE:1}"
-          echo ${{ inputs.version_name }}
-          if [ -n "${{ inputs.version_name }}" ]; then
-            ./gradlew -PverName=${{ inputs.version_name }} clean assemble${BUILD_TYPE_CAP}
-          else
-            ./gradlew clean assemble${BUILD_TYPE_CAP}
-          fi
-        env:
-          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
-      - name: Set App name
-        if: ${{ inputs.upload_artifacts == true }}
-        run: |
-          APP_NAME=$(basename $(ls build/outputs/aar/*${{ inputs.build_type }}.aar | head -n 1))
-          echo "Detected AAR file: $APP_NAME"
-          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
-        env:
-          INPUT_BUILD_TYPE: ${{ inputs.build_type }}
+  validate_pr:
+    if: github.event_name == 'pull_request' && github.base_ref == 'develop'
+    needs: android_build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No artifact needed for pull requests."
 
+  test_candidate:
+    if: startsWith(github.ref_name, 'test/')
+    needs: android_build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Create github.properties file
+        run: |
+          touch github.properties
+          echo gpr.usr=${{ secrets.GPR_USER }} >> github.properties
+          echo gpr.key=${{ secrets.GPR_API_KEY }} >> github.properties
+          cat github.properties
+
+      - name: Get branch name
+        id: extract_branch
+        run: |
+          echo "branch=$(echo ${GITHUB_REF##*/})" >>$GITHUB_OUTPUT
+
+      - name: Build with Gradle
+        run: ./gradlew -PverName=${{steps.extract_branch.outputs.branch}} clean build
+      - name: Set App name
+        run: |
+          echo "APP_NAME=$(basename  `ls build/outputs/aar/*debug.aar | head -n 1`)" >> $GITHUB_ENV
+        id:
+          app_name
       - name: Upload package
-        if: ${{ inputs.upload_artifacts == true }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.APP_NAME }}
-          path: build/outputs/aar/${{ env.APP_NAME }}
+          name: ${{env.APP_NAME}}
+          path: build/outputs/aar/${{env.APP_NAME}}
+
+  release_candidate:
+    if: contains(fromJson('["main", "master"]'), github.ref_name)
+    needs: [android_build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Create github.properties file
+        run: |
+          touch github.properties
+          echo gpr.usr=${{ secrets.GPR_USER }} >> github.properties
+          echo gpr.key=${{ secrets.GPR_API_KEY }} >> github.properties
+          cat github.properties
 
       - name: Retrieve Version name
-        if: ${{ inputs.create_release == true }}
-        id: app_version
         run: |
-          VERSION_NAME=$(./gradlew -q versionName)
-          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
-          echo "::set-output name=VERSION_NAME::$VERSION_NAME"
-
+          echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q versionName)"
+        id: app_version
+      - name: Set Version name
+        run: |
+          echo "VERSION_NAME=${{steps.app_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Set App name
+        run: |
+          echo "APP_NAME=$(basename `ls build/outputs/aar/*release.aar | head -n 1`)" >> $GITHUB_ENV
+          echo "AppName is $APP_NAME"
+        id:
+          app_name
       - name: Create Release
-        if: ${{ inputs.create_release == true }}
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v.${{ env.VERSION_NAME }}
-          release_name: Release ${{ env.VERSION_NAME }}
-
+          tag_name: v.${{env.VERSION_NAME}}
+          release_name: Release  ${{env.VERSION_NAME}}
       - name: Upload Release Package
-        if: ${{ inputs.create_release == true }}
+        id: upload_release_asset
         uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/outputs/aar/${{ env.APP_NAME }}
-          asset_name: ${{ env.APP_NAME }}
+          asset_path: build/outputs/aar/${{env.APP_NAME}}
+          asset_name: ${{env.APP_NAME}}
           asset_content_type: application/zip
-
       - name: Publish package
-        if: ${{ inputs.create_release == true }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew publish
