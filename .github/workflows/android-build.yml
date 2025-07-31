@@ -12,7 +12,7 @@ on:
       - develop
 
 jobs:
-  build:
+  android_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -49,14 +49,17 @@ jobs:
         with:
           name: LintResult
           path: build/reports/lint-results*.html
-  pull_request:
-    if: ${{ contains(fromJson('["test"]'), github.ref_name) }}
-    needs: [ android_build ]
+
+  validate_pr:
+    if: github.event_name == 'pull_request' && github.base_ref == 'develop'
+    needs: android_build
     runs-on: ubuntu-latest
+    steps:
+      - run: echo "No artifact needed for pull requests."
 
   test_candidate:
-    if: ${{ contains(fromJson('["test"]'), github.ref_name) }}
-    needs: [ android_build ]
+    if: startsWith(github.ref_name, 'test/')
+    needs: android_build
     runs-on: ubuntu-latest
 
     steps:
@@ -78,7 +81,7 @@ jobs:
           path: build/outputs/aar/${{env.APP_NAME}}
 
   release_candidate:
-    if: ${{ contains(fromJson('["test", "master"]'), github.ref_name) }}
+    if: contains(fromJson('["main", "master"]'), github.ref_name)
     needs: [android_build]
     runs-on: ubuntu-latest
 
