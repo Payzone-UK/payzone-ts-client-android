@@ -51,7 +51,7 @@ jobs:
           path: build/reports/lint-results*.html
 
   validate_pr:
-    if: github.event_name == 'pull_request' && github.base_ref == 'develop'
+    if: startsWith(github.ref_name, 'test/')
     needs: android_build
     runs-on: ubuntu-latest
     steps:
@@ -63,10 +63,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Get branch name
         id: extract_branch
         run: |
           echo "branch=$(echo ${GITHUB_REF##*/})" >>$GITHUB_OUTPUT
+
       - name: Build with Gradle
         run: ./gradlew -PverName=${{steps.extract_branch.outputs.branch}} clean build
       - name: Set App name
@@ -81,11 +84,13 @@ jobs:
           path: build/outputs/aar/${{env.APP_NAME}}
 
   release_candidate:
-    if: contains(fromJson('["main", "master"]'), github.ref_name)
+    if: startsWith(github.ref_name, 'test/')
     needs: [android_build]
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Retrieve Version name
         run: |
           echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q versionName)"
