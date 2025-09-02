@@ -38,7 +38,8 @@ public class MessageConstants {
     public static final int MSG_EPAY_VARIANTS = 33;
     public static final int MSG_EPAY_PURCHASE = 34;
     public static final int MSG_STORE_MID = 35;
-
+    public static final int MSG_EPAY_REVERSE = 36;
+    public static final int MSG_GET_TRANSACTION = 37;
     // Parameter KEYS FOR
     public static final String RESP_CONFIG_SETUP = "configSetup";
     public static final String RESP_REGISTER_DEVICE = "registerDevice";
@@ -74,6 +75,8 @@ public class MessageConstants {
     public static final String RESP_EPAY_VARIANTS = "epayVariants";
     public static final String RESP_EPAY_PURCHASE = "epayPurchase";
     public static final String RESP_STORE_MID = "storeMid";
+    public static final String RESP_EPAY_REVERSE = "epayReverse";
+    public static final String RESP_TRANSACTION_BY_NUMBER = "getTransactionByTransactionNumber";
 
     // Intent actions to receive the broadcasts
     public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";

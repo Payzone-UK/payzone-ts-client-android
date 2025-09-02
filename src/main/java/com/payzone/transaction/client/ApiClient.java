@@ -388,6 +388,20 @@ public class ApiClient extends Handler {
                 jsonParams.toString()
         );
     }
+    public boolean epayReversal(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_EPAY_REVERSE,
+                MessageConstants.RESP_EPAY_REVERSE,
+                jsonParams.toString()
+        );
+    }
+    public boolean getTeansactionByNumber(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_GET_TRANSACTION,
+                MessageConstants.RESP_TRANSACTION_BY_NUMBER,
+                jsonParams.toString()
+        );
+    }
     public boolean storeMerchantId(String mid) {
         return sendMessage(
                 MessageConstants.MSG_STORE_MID,
