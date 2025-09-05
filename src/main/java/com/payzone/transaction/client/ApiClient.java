@@ -395,7 +395,7 @@ public class ApiClient extends Handler {
                 jsonParams.toString()
         );
     }
-    public boolean getTeansactionByNumber(JSONObject jsonParams) {
+    public boolean getTransactionByNumber(JSONObject jsonParams) {
         return sendMessage(
                 MessageConstants.MSG_GET_TRANSACTION,
                 MessageConstants.RESP_TRANSACTION_BY_NUMBER,
@@ -408,6 +408,18 @@ public class ApiClient extends Handler {
                 MessageConstants.RESP_STORE_MID,
                 mid
         );
+    }
+    public boolean validateBarcode(JSONObject jsonParams) {
+        return sendMessage(
+                MessageConstants.MSG_VALIDATE_BARCODE,
+                MessageConstants.RESP_VALIDATE_BARCODE,
+                jsonParams.toString()
+        );
+    }
+    public boolean getMerchantCredit() {
+        return sendMessage(
+                MessageConstants.MSG_MERCHANT_CREDIT,
+                MessageConstants.RESP_MERCHANT_CREDIT, "" );
     }
 
     public static String decompressData(String zipText) {
