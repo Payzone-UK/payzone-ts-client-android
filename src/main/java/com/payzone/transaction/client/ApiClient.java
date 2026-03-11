@@ -13,6 +13,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Base64;
+import android.util.Log;
 
 import com.payzone.transaction.client.handlers.MessageResponseHandler;
 
@@ -25,6 +26,8 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
 public class ApiClient extends Handler {
+    static final String TAG = ApiClient.class.getSimpleName();
+
     /**
      * Messenger for communicating with the service.
      */
@@ -401,6 +404,23 @@ public class ApiClient extends Handler {
         return sReturn;
     }
 
+    boolean handleSendFailure(int request, Exception exception) {
+        if (exception instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+        }
+        Log.e(TAG, "Message sending failed for request: " + request, exception);
+        try {
+            Message msg = Message.obtain(null, request);
+            Bundle data = new Bundle();
+            data.putString(MessageConstants.RESP_SEND_FAILURE_REASON, exception.getMessage());
+            msg.setData(data);
+            replyMessenger.send(msg);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to deliver send failure notification for request: " + request, e);
+        }
+        return false;
+    }
+
     private boolean sendMessage(int request, String responseKey, String payload) {
         // Create and send a message to the service, using a supported 'what' value
         retry = 0;
@@ -429,14 +449,18 @@ public class ApiClient extends Handler {
                     }
                     if (!mBound) {
                         retry++;
-                        if(retry < 5) {
+                        if (retry < 5) {
                             Thread.sleep(1000);
                             run();
+                        } else {
+                            handleSendFailure(request, new RemoteException(
+                                    "Service did not bind after " + retry + " attempts"));
                         }
                     }
                 }
-                catch (RemoteException e) {}
-                catch (InterruptedException e) {}
+                catch (RemoteException | InterruptedException e) {
+                    handleSendFailure(request, e);
+                }
             }
         }, 1000);
     }

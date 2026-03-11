@@ -13,6 +13,11 @@ public class MessageResponseHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
+        String error = msg.getData().getString(MessageConstants.RESP_SEND_FAILURE_REASON);
+        if (error != null) {
+            System.out.println("## Send failure for request " + msg.what + ": " + error);
+            return;
+        }
         switch (msg.what) {
             case MessageConstants.MSG_REGISTER_DEVICE:
                 response = ApiClient.decompressData(msg.getData().getString(MessageConstants.RESP_REGISTER_DEVICE));

@@ -68,6 +68,8 @@ public class MessageConstants {
     public static final String RESP_STOP_TALEXUS = "stopTalexus";
     public static final String RESP_VALIDATE_KEYPAD_CODE = "validateKeypadCode";
     public static final String RESP_KEYPAD_PURCHASE = "keypadPurchase";
+    /** Bundle key present when a message could not be delivered to the service. */
+    public static final String RESP_SEND_FAILURE_REASON = "sendFailureReason";
 
     // Intent actions to receive the broadcasts
     public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";

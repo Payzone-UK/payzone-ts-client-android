@@ -2,6 +2,7 @@ package com.payzone.transaction.client;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.RemoteException;
 
 import android.test.mock.MockContext;
 import org.json.JSONException;
@@ -261,5 +262,21 @@ public class ApiClientUnitTest {
         assertThrows(NullPointerException.class, () -> {
             apiClient.validateKeypadCode(null);
         });
+    }
+
+    @Test
+    public void handleSendFailureReturnsFalseForRemoteException() {
+        assertFalse(apiClient.handleSendFailure(101, new RemoteException("service unavailable")));
+    }
+
+    @Test
+    public void handleSendFailureRestoresInterruptFlag() {
+        assertFalse(Thread.currentThread().isInterrupted());
+
+        assertFalse(apiClient.handleSendFailure(102, new InterruptedException("interrupted")));
+        assertTrue(Thread.currentThread().isInterrupted());
+
+        assertTrue(Thread.interrupted());
+        assertFalse(Thread.currentThread().isInterrupted());
     }
 }
