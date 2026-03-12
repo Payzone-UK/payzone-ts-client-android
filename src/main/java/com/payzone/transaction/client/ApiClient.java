@@ -70,7 +70,7 @@ public class ApiClient extends Handler {
                 mService = new Messenger(service);
                 mBound = true;
                 serviceBoundLatch.countDown();
-                System.out.println("## Service Connection Established...");
+                Log.d(TAG, "Service Connection Established");
                 fetchConfigData();
             }
 
@@ -91,7 +91,7 @@ public class ApiClient extends Handler {
                 new ComponentName("com.payzone.transaction",
                         "com.payzone.transaction.services.TransactionService"));
         boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        System.out.println("## Binding in progress: "+ bindResult);
+        Log.d(TAG, "Binding in progress: "+ bindResult);
     }
 
     /**
@@ -109,7 +109,7 @@ public class ApiClient extends Handler {
 
     public void fetchConfigData() {
         boolean res = fetchMyConfigData();
-        System.out.println("## Fetch Config Data: "+ res);
+        Log.d(TAG, "Fetch Config Data: "+ res);
     }
 
     private boolean fetchMyConfigData() {
@@ -397,7 +397,7 @@ public class ApiClient extends Handler {
                 sReturn = new String(baos.toByteArray(), "UTF-8");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to decompress data", e);
         }
         return sReturn;
     }
