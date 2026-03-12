@@ -59,7 +59,7 @@ public class ApiClient {
     };
 
     public ApiClient(Context ctx, Messenger messenger) {
-        this.ctx = ctx;
+        this.ctx = ctx.getApplicationContext();
         if(messenger != null) {
             this.replyMessenger = messenger;
         } else { // Use Default MessageResponseHandler from Library
