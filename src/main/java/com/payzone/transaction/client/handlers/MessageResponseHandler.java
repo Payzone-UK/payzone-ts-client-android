@@ -3,6 +3,7 @@ package com.payzone.transaction.client.handlers;
 // handler for message from service
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -11,6 +12,11 @@ import com.payzone.transaction.client.MessageConstants;
 
 public class MessageResponseHandler extends Handler {
     private static final String TAG = MessageResponseHandler.class.getSimpleName();
+
+    public MessageResponseHandler() {
+        super(Looper.getMainLooper());
+    }
+
     String response;
 
     @Override

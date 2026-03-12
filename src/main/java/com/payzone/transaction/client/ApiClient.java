@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -27,8 +28,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
-public class ApiClient extends Handler {
+public class ApiClient {
     static final String TAG = ApiClient.class.getSimpleName();
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     /**
      * Messenger for communicating with the service.
@@ -420,7 +422,7 @@ public class ApiClient extends Handler {
     }
 
     private boolean sendMessage(int request, String responseKey, String payload) {
-        return postDelayed(() -> {
+        return handler.postDelayed(() -> {
             try {
                 if (!serviceBoundLatch.await(20, TimeUnit.SECONDS)) {
                     handleSendFailure(request, new RemoteException(
