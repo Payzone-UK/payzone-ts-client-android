@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 public class ApiClient extends Handler {
@@ -40,7 +42,7 @@ public class ApiClient extends Handler {
     private ServiceConnection mConnection;
     private boolean isKeyInserted = false;
     private boolean isBoxConnected = false;
-    public int retry = 0;
+    private final CountDownLatch serviceBoundLatch = new CountDownLatch(1);
     final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -65,13 +67,9 @@ public class ApiClient extends Handler {
 
         this.mConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName className, IBinder service) {
-                // This is called when the connection with the service has been
-                // established, giving us the object we can use to
-                // interact with the service.  We are communicating with the
-                // service using a Messenger, so here we get a client-side
-                // representation of that from the raw IBinder object.
                 mService = new Messenger(service);
                 mBound = true;
+                serviceBoundLatch.countDown();
                 System.out.println("## Service Connection Established...");
                 fetchConfigData();
             }
@@ -422,46 +420,30 @@ public class ApiClient extends Handler {
     }
 
     private boolean sendMessage(int request, String responseKey, String payload) {
-        // Create and send a message to the service, using a supported 'what' value
-        retry = 0;
-        return postDelayed(new Runnable() {
-            public void run() {
-                long currentTime = System.currentTimeMillis();
-                long stopTime = currentTime + 20000;
-                System.out.println("## mBound is: " + mBound);
-                // Create and send a message to the service, using a supported 'what' value
+        return postDelayed(() -> {
+            try {
+                if (!serviceBoundLatch.await(20, TimeUnit.SECONDS)) {
+                    handleSendFailure(request, new RemoteException(
+                            "Service binding timed out after 20 seconds"));
+                    return;
+                }
+                if (!mBound || mService == null) {
+                    handleSendFailure(request, new RemoteException(
+                            "Service disconnected before message could be sent"));
+                    return;
+                }
                 Message msg = Message.obtain(null, request, 0, 0);
                 msg.replyTo = replyMessenger;
-                System.out.println("## Started sending message at: "+ currentTime);
-                try {
-                    Bundle data = new Bundle();
-                    data.putString("responseKey", responseKey);
-                    data.putString(responseKey, payload);
-                    data.putString("packageName", ctx.getPackageName());
-                    msg.setData(data);
-                    while (currentTime <= stopTime) {
-                        if (mBound) {
-                            mService.send(msg);
-                            System.out.println("## Message code "+ request +" sent at : "+ currentTime);
-                            break;
-                        }
-                        currentTime = System.currentTimeMillis();
-                    }
-                    if (!mBound) {
-                        retry++;
-                        if (retry < 5) {
-                            Thread.sleep(1000);
-                            run();
-                        } else {
-                            handleSendFailure(request, new RemoteException(
-                                    "Service did not bind after " + retry + " attempts"));
-                        }
-                    }
-                }
-                catch (RemoteException | InterruptedException e) {
-                    handleSendFailure(request, e);
-                }
+                Bundle data = new Bundle();
+                data.putString("responseKey", responseKey);
+                data.putString(responseKey, payload);
+                data.putString("packageName", ctx.getPackageName());
+                msg.setData(data);
+                mService.send(msg);
+                Log.d(TAG, "Message code " + request + " sent successfully");
+            } catch (RemoteException | InterruptedException e) {
+                handleSendFailure(request, e);
             }
-        }, 1000);
+        }, 0);
     }
 }
