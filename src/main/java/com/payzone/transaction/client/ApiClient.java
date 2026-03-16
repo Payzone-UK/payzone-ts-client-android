@@ -47,7 +47,7 @@ public class ApiClient {
     private ServiceConnection mConnection;
     private boolean isKeyInserted = false;
     private boolean isBoxConnected = false;
-    private final CountDownLatch serviceBoundLatch = new CountDownLatch(1);
+    private volatile CountDownLatch serviceBoundLatch = new CountDownLatch(1);
     final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -84,6 +84,7 @@ public class ApiClient {
                 // unexpectedly disconnected -- that is, its process crashed.
                 mService = null;
                 mBound = false;
+                serviceBoundLatch = new CountDownLatch(1);
             }
         };
     }
