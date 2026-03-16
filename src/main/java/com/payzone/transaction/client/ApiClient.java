@@ -25,6 +25,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
@@ -32,6 +34,11 @@ import java.util.zip.GZIPInputStream;
 public class ApiClient {
     static final String TAG = ApiClient.class.getSimpleName();
     private final Handler handler = new Handler(Looper.getMainLooper());
+
+    /** Number of bytes prepended to the GZIP payload before Base64 encoding. */
+    private static final int GZIP_HEADER_SKIP_BYTES = 4;
+    /** How long to wait for the service to bind before reporting a timeout failure. */
+    private static final int SERVICE_BIND_TIMEOUT_SECONDS = 20;
 
     private static final String PAYZONE_SERVICE_PACKAGE = "com.payzone.transaction";
 
@@ -51,13 +58,19 @@ public class ApiClient {
     final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            isKeyInserted = intent.getExtras().getBoolean(MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED);
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                isKeyInserted = extras.getBoolean(MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED);
+            }
         }
     };
     private final BroadcastReceiver mHandleBoxStatusMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            isBoxConnected = intent.getExtras().getBoolean(MessageConstants.RESP_TALEXUS_BOX_STATUS);
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                isBoxConnected = extras.getBoolean(MessageConstants.RESP_TALEXUS_BOX_STATUS);
+            }
         }
     };
 
@@ -72,6 +85,11 @@ public class ApiClient {
 
         this.mConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName className, IBinder service) {
+                if (!PAYZONE_SERVICE_PACKAGE.equals(className.getPackageName())) {
+                    Log.e(TAG, "Rejecting connection from unexpected package: " + className.getPackageName());
+                    ctx.unbindService(mConnection);
+                    return;
+                }
                 mService = new Messenger(service);
                 mBound = true;
                 serviceBoundLatch.countDown();
@@ -143,6 +161,7 @@ public class ApiClient {
     }
 
     public boolean registerDevice(JSONObject jsonParams) throws JSONException {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         JSONObject registerJsonObj = new JSONObject();
         registerJsonObj.put("terminal", jsonParams);
         return sendMessage(
@@ -153,6 +172,7 @@ public class ApiClient {
     }
 
     public boolean initTransaction(JSONObject jsonParams) throws JSONException {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         JSONObject purchaseJsonObj = new JSONObject();
         purchaseJsonObj.put("purchase", jsonParams);
         return sendMessage(
@@ -163,6 +183,7 @@ public class ApiClient {
     }
 
     public boolean completeTransaction(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_COMPLETE_TRANS,
                 MessageConstants.RESP_COMPLETE_TRANS,
@@ -171,6 +192,7 @@ public class ApiClient {
     }
 
     public boolean markTransactionSuccess(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_MARK_TRANS_SUCCESS,
                 MessageConstants.RESP_MARK_TRANS_SUCCESS,
@@ -179,6 +201,7 @@ public class ApiClient {
     }
 
     public boolean markTransactionFailed(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_MARK_TRANS_FAILED,
                 MessageConstants.RESP_MARK_TRANS_FAILED,
@@ -187,6 +210,7 @@ public class ApiClient {
     }
 
     public boolean markReceiptPrinted(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_MARK_RECEIPT_PRINTED,
                 MessageConstants.RESP_MARK_RECEIPT_PRINTED,
@@ -195,6 +219,7 @@ public class ApiClient {
     }
 
     public boolean getToken(String tId) {
+        Objects.requireNonNull(tId, "tId must not be null");
         return sendMessage(
                 MessageConstants.MSG_GET_TOKEN,
                 MessageConstants.RESP_GET_TOKEN,
@@ -203,6 +228,7 @@ public class ApiClient {
     }
 
     public boolean getTokenBySerialNumber(String serialNumber) {
+        Objects.requireNonNull(serialNumber, "serialNumber must not be null");
         return sendMessage(
                 MessageConstants.MSG_GET_TOKEN_BY_SERIAL_NUMBER,
                 MessageConstants.RESP_GET_TOKEN_BY_SERIAL_NUMBER,
@@ -211,6 +237,7 @@ public class ApiClient {
     }
 
     public boolean startSession(JSONObject jsonParams) throws JSONException {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         JSONObject sessionJsonObj = new JSONObject();
         sessionJsonObj.put("session", jsonParams);
         return sendMessage(
@@ -221,9 +248,7 @@ public class ApiClient {
     }
 
     public boolean storeCashierId(String cashierId) {
-        if (cashierId == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(cashierId, "cashierId must not be null");
         return sendMessage(
                 MessageConstants.MSG_STORE_CID,
                 MessageConstants.RESP_STORE_CID,
@@ -247,6 +272,7 @@ public class ApiClient {
     }
 
     public boolean addCredit(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_TALEXUS_ADD_CREDIT,
                 MessageConstants.RESP_TALEXUS_ADD_CREDIT,
@@ -255,6 +281,7 @@ public class ApiClient {
     }
 
     public boolean rti(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_TALEXUS_RTI,
                 MessageConstants.RESP_TALEXUS_RTI,
@@ -263,6 +290,7 @@ public class ApiClient {
     }
 
     public boolean pzAddCredit(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.PZ_MSG_TALEXUS_ADD_CREDIT,
                 MessageConstants.RESP_TALEXUS_ADD_CREDIT,
@@ -271,6 +299,7 @@ public class ApiClient {
     }
 
     public boolean pzRti(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.PZ_MSG_TALEXUS_RTI,
                 MessageConstants.RESP_TALEXUS_RTI,
@@ -295,6 +324,7 @@ public class ApiClient {
     }
 
     public boolean reversal(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_TALEXUS_REVERSE_CREDIT,
                 MessageConstants.RESP_TALEXUS_REVERSE_CREDIT,
@@ -303,6 +333,7 @@ public class ApiClient {
     }
 
     public boolean nspHotcard(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_QUANTUM_NSP_HOT_CARD,
                 MessageConstants.RESP_QUANTUM_NSP_HOT_CARD,
@@ -310,6 +341,7 @@ public class ApiClient {
         );
     }
     public boolean securityKeys(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_QUANTUM_SECURITY_KEYS,
                 MessageConstants.RESP_QUANTUM_SECURITY_KEYS,
@@ -317,6 +349,7 @@ public class ApiClient {
         );
     }
     public boolean localSecretCode(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_QUANTUM_LOCAL_SECRET_CODE,
                 MessageConstants.RESP_QUANTUM_LOCAL_SECRET_CODE,
@@ -324,6 +357,7 @@ public class ApiClient {
         );
     }
     public boolean csRegional(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_QUANTUM_CS_REGIONAL,
                 MessageConstants.RESP_QUANTUM_CS_REGIONAL,
@@ -331,6 +365,7 @@ public class ApiClient {
         );
     }
     public boolean quantumTransactionComplete(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_QUANTUM_TRANSACTION_COMPLETE,
                 MessageConstants.RESP_QUANTUM_TRANSACTION_COMPLETE,
@@ -338,6 +373,7 @@ public class ApiClient {
         );
     }
     public boolean quantumRtiTransaction(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_QUANTUM_RTI,
                 MessageConstants.RESP_QUANTUM_RTI,
@@ -345,6 +381,7 @@ public class ApiClient {
         );
     }
     public boolean sale(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_QUANTUM_SALE,
                 MessageConstants.RESP_QUANTUM_SALE,
@@ -352,6 +389,7 @@ public class ApiClient {
         );
     }
     public boolean openBasket(String basketId) {
+        Objects.requireNonNull(basketId, "basketId must not be null");
         return sendMessage(
                 MessageConstants.MSG_OPEN_BASKET,
                 MessageConstants.RESP_OPEN_BASKET,
@@ -359,6 +397,7 @@ public class ApiClient {
         );
     }
     public boolean closeBasket(String basketId) {
+        Objects.requireNonNull(basketId, "basketId must not be null");
         return sendMessage(
                 MessageConstants.MSG_CLOSE_BASKET,
                 MessageConstants.RESP_CLOSE_BASKET,
@@ -367,6 +406,7 @@ public class ApiClient {
     }
 
     public boolean validateKeypadCode(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_VALIDATE_KEYPAD_CODE,
                 MessageConstants.RESP_VALIDATE_KEYPAD_CODE,
@@ -375,6 +415,7 @@ public class ApiClient {
     }
 
     public boolean keypadPurchase(JSONObject jsonParams) {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
         return sendMessage(
                 MessageConstants.MSG_KEYPAD_PURCHASE,
                 MessageConstants.RESP_KEYPAD_PURCHASE,
@@ -383,29 +424,28 @@ public class ApiClient {
     }
 
     public static String decompressData(String zipText) {
-        String sReturn = "";
-        try {
-            byte[] compressed = Base64.decode(zipText, Base64.DEFAULT);
-            if (compressed.length > 4) {
-                GZIPInputStream gzipInputStream = null;
-                    gzipInputStream = new GZIPInputStream(
-                            new ByteArrayInputStream(compressed, 4,
-                                    compressed.length - 4));
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                for (int value = 0; value != -1;) {
-                    value = gzipInputStream.read();
-                    if (value != -1) {
-                        baos.write(value);
-                    }
-                }
-                gzipInputStream.close();
-                baos.close();
-                sReturn = new String(baos.toByteArray(), "UTF-8");
+        if (zipText == null) return "";
+        return decompressBytes(Base64.decode(zipText, Base64.DEFAULT));
+    }
+
+    static String decompressBytes(byte[] compressed) {
+        if (compressed == null || compressed.length <= GZIP_HEADER_SKIP_BYTES) {
+            return "";
+        }
+        try (GZIPInputStream gzipInputStream = new GZIPInputStream(
+                     new ByteArrayInputStream(compressed, GZIP_HEADER_SKIP_BYTES,
+                             compressed.length - GZIP_HEADER_SKIP_BYTES));
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = gzipInputStream.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
             }
+            return new String(baos.toByteArray(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             Log.e(TAG, "Failed to decompress data", e);
+            return "";
         }
-        return sReturn;
     }
 
     /**
@@ -426,7 +466,8 @@ public class ApiClient {
         }
         Log.e(TAG, "Message sending failed for request: " + request, exception);
         try {
-            Message msg = Message.obtain(null, request);
+            Message msg = new Message();
+            msg.what = request;
             Bundle data = new Bundle();
             data.putString(MessageConstants.RESP_SEND_FAILURE_REASON, exception.getMessage());
             msg.setData(data);
@@ -440,9 +481,9 @@ public class ApiClient {
     private boolean sendMessage(int request, String responseKey, String payload) {
         return handler.postDelayed(() -> {
             try {
-                if (!serviceBoundLatch.await(20, TimeUnit.SECONDS)) {
+                if (!serviceBoundLatch.await(SERVICE_BIND_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                     handleSendFailure(request, new RemoteException(
-                            "Service binding timed out after 20 seconds"));
+                            "Service binding timed out after " + SERVICE_BIND_TIMEOUT_SECONDS + " seconds"));
                     return;
                 }
                 if (!mBound || mService == null) {
@@ -453,9 +494,9 @@ public class ApiClient {
                 Message msg = Message.obtain(null, request, 0, 0);
                 msg.replyTo = replyMessenger;
                 Bundle data = new Bundle();
-                data.putString("responseKey", responseKey);
+                data.putString(MessageConstants.BUNDLE_RESPONSE_KEY, responseKey);
                 data.putString(responseKey, payload);
-                data.putString("packageName", ctx.getPackageName());
+                data.putString(MessageConstants.BUNDLE_PACKAGE_NAME, ctx.getPackageName());
                 msg.setData(data);
                 mService.send(msg);
                 Log.d(TAG, "Message code " + request + " sent successfully");

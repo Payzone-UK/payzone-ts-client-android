@@ -7,13 +7,23 @@ import android.os.RemoteException;
 import android.test.mock.MockContext;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.zip.GZIPOutputStream;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import org.junit.BeforeClass;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -28,6 +38,7 @@ public class ApiClientUnitTest {
     @BeforeClass
     public static void testSetup() throws PackageManager.NameNotFoundException {
         mContext = mock(MockContext.class);
+        when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getPackageName()).thenReturn("com.payzone.transaction.client.test");
 
 //        appContext = mContext.createPackageContext("com.payzone.transaction.client.test", 0);
@@ -62,16 +73,19 @@ public class ApiClientUnitTest {
         obj.put("deviceId", "1545D2053");
         obj.put("tId", "49691");
         assertEquals(false, apiClient.registerDevice(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.registerDevice(null));
     }
 
     @Test
     public void getToken() {
         assertEquals(false, apiClient.getToken("49691"));
+        assertThrows(NullPointerException.class, () -> apiClient.getToken(null));
     }
 
     @Test
     public void getTokenBySerialNumber() {
         assertEquals(false, apiClient.getTokenBySerialNumber("1545D2053"));
+        assertThrows(NullPointerException.class, () -> apiClient.getTokenBySerialNumber(null));
     }
 
     @Test
@@ -79,18 +93,21 @@ public class ApiClientUnitTest {
         JSONObject obj = new JSONObject();
         obj.put("pin", 1234);
         assertEquals(false, apiClient.startSession(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.startSession(null));
     }
 
     @Test
     public void initTransaction() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.initTransaction(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.initTransaction(null));
     }
 
     @Test
     public void completeTransaction() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.completeTransaction(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.completeTransaction(null));
     }
 
     @Test
@@ -149,14 +166,14 @@ public class ApiClientUnitTest {
     public void pzAddCredit() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.pzAddCredit(obj));
-        assertThrows(NullPointerException.class, () -> { apiClient.addCredit(null);});
+        assertThrows(NullPointerException.class, () -> apiClient.pzAddCredit(null));
     }
 
     @Test
     public void pzRti() throws JSONException {
         JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.pzRti(obj));
-        assertThrows(NullPointerException.class, () -> { apiClient.rti(null);});
+        assertThrows(NullPointerException.class, () -> apiClient.pzRti(null));
     }
 
     @Test
@@ -236,14 +253,14 @@ public class ApiClientUnitTest {
     }
     @Test
     public void openBasket() {
-        JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.openBasket("123456-121"));
+        assertThrows(NullPointerException.class, () -> apiClient.openBasket(null));
     }
 
     @Test
     public void closeBasket() {
-        JSONObject obj = new JSONObject();
         assertEquals(false, apiClient.closeBasket("12345"));
+        assertThrows(NullPointerException.class, () -> apiClient.closeBasket(null));
     }
 
     @Test
@@ -278,5 +295,55 @@ public class ApiClientUnitTest {
 
         assertTrue(Thread.interrupted());
         assertFalse(Thread.currentThread().isInterrupted());
+    }
+
+    @Test
+    public void decompressBytesRoundTrip() throws IOException {
+        String original = "Hello Payzone Transaction Service";
+        assertEquals(original, ApiClient.decompressBytes(buildCompressedBytes(original)));
+    }
+
+    @Test
+    public void decompressBytesReturnsEmptyForShortInput() {
+        assertEquals("", ApiClient.decompressBytes(new byte[]{1, 2, 3, 4}));
+    }
+
+    @Test
+    public void decompressBytesReturnsEmptyForCorruptPayload() {
+        // 4-byte prefix followed by garbage — not valid GZIP
+        assertEquals("", ApiClient.decompressBytes(new byte[]{0, 0, 0, 0, 1, 2, 3, 4, 5}));
+    }
+
+    @Test
+    public void decompressBytesReturnsEmptyForNull() {
+        assertEquals("", ApiClient.decompressBytes(null));
+    }
+
+    @Test
+    public void decompressBytesIsThreadSafe() throws IOException, InterruptedException, ExecutionException {
+        String original = "Concurrent decompression test payload";
+        byte[] compressed = buildCompressedBytes(original);
+
+        int threadCount = 10;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        List<Future<String>> futures = new ArrayList<>();
+
+        for (int i = 0; i < threadCount; i++) {
+            futures.add(executor.submit(() -> ApiClient.decompressBytes(compressed)));
+        }
+        executor.shutdown();
+
+        for (Future<String> future : futures) {
+            assertEquals(original, future.get());
+        }
+    }
+
+    private static byte[] buildCompressedBytes(String text) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(new byte[]{0, 0, 0, 0}); // 4-byte header skipped by decompressBytes
+        try (GZIPOutputStream gos = new GZIPOutputStream(baos)) {
+            gos.write(text.getBytes(StandardCharsets.UTF_8));
+        }
+        return baos.toByteArray();
     }
 }

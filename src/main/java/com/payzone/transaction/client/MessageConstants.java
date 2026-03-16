@@ -71,6 +71,12 @@ public class MessageConstants {
     /** Bundle key present when a message could not be delivered to the service. */
     public static final String RESP_SEND_FAILURE_REASON = "sendFailureReason";
 
+    // Internal IPC bundle routing keys
+    /** Bundle key whose value names the response key to expect in the reply. */
+    public static final String BUNDLE_RESPONSE_KEY = "responseKey";
+    /** Bundle key whose value is the calling app's package name. */
+    public static final String BUNDLE_PACKAGE_NAME = "packageName";
+
     // Intent actions to receive the broadcasts
     public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
     public static final String ACTION_TALEXUS_BOX_STATUS = "talexus.box.connected";
