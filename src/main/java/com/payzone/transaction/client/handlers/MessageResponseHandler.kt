@@ -72,6 +72,78 @@ class MessageResponseHandler : Handler(Looper.getMainLooper()) {
                 Log.d(TAG, "Talexus stop Response received")
                 ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_STOP_TALEXUS))
             }
+            MessageConstants.MSG_CONFIG_SETUP -> {
+                Log.d(TAG, "Config setup Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_CONFIG_SETUP))
+            }
+            MessageConstants.MSG_GET_TOKEN -> {
+                Log.d(TAG, "Get token Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_GET_TOKEN))
+            }
+            MessageConstants.MSG_GET_TOKEN_BY_SERIAL_NUMBER -> {
+                Log.d(TAG, "Get token by serial number Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_GET_TOKEN_BY_SERIAL_NUMBER))
+            }
+            MessageConstants.MSG_START_SESSION -> {
+                Log.d(TAG, "Start session Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_START_SESSION))
+            }
+            MessageConstants.MSG_STORE_CID -> {
+                Log.d(TAG, "Store cashier ID Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_STORE_CID))
+            }
+            MessageConstants.MSG_IS_TRANSACTION_READY -> {
+                Log.d(TAG, "Is transaction ready Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_IS_TRANSACTION_READY))
+            }
+            MessageConstants.MSG_TALEXUS_BOX_CONNECTED -> {
+                Log.d(TAG, "Talexus box status Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_TALEXUS_BOX_STATUS))
+            }
+            MessageConstants.MSG_QUANTUM_SALE -> {
+                Log.d(TAG, "Quantum sale Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_QUANTUM_SALE))
+            }
+            MessageConstants.MSG_QUANTUM_SECURITY_KEYS -> {
+                Log.d(TAG, "Quantum security keys Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_QUANTUM_SECURITY_KEYS))
+            }
+            MessageConstants.MSG_QUANTUM_LOCAL_SECRET_CODE -> {
+                Log.d(TAG, "Quantum local secret code Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_QUANTUM_LOCAL_SECRET_CODE))
+            }
+            MessageConstants.MSG_QUANTUM_NSP_HOT_CARD -> {
+                Log.d(TAG, "Quantum NSP hotcard Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_QUANTUM_NSP_HOT_CARD))
+            }
+            MessageConstants.MSG_QUANTUM_CS_REGIONAL -> {
+                Log.d(TAG, "Quantum CS regional Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_QUANTUM_CS_REGIONAL))
+            }
+            MessageConstants.MSG_QUANTUM_TRANSACTION_COMPLETE -> {
+                Log.d(TAG, "Quantum transaction complete Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_QUANTUM_TRANSACTION_COMPLETE))
+            }
+            MessageConstants.MSG_QUANTUM_RTI -> {
+                Log.d(TAG, "Quantum RTI Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_QUANTUM_RTI))
+            }
+            MessageConstants.MSG_OPEN_BASKET -> {
+                Log.d(TAG, "Open basket Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_OPEN_BASKET))
+            }
+            MessageConstants.MSG_CLOSE_BASKET -> {
+                Log.d(TAG, "Close basket Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_CLOSE_BASKET))
+            }
+            MessageConstants.MSG_VALIDATE_KEYPAD_CODE -> {
+                Log.d(TAG, "Validate keypad code Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_VALIDATE_KEYPAD_CODE))
+            }
+            MessageConstants.MSG_KEYPAD_PURCHASE -> {
+                Log.d(TAG, "Keypad purchase Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_KEYPAD_PURCHASE))
+            }
             else -> {
                 super.handleMessage(msg)
                 return
