@@ -1,508 +1,386 @@
-package com.payzone.transaction.client;
+package com.payzone.transaction.client
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Base64;
-import android.util.Log;
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
+import android.os.Build
+import android.os.Bundle
+import android.os.IBinder
+import android.os.Message
+import android.os.Messenger
+import android.os.RemoteException
+import android.util.Base64
+import android.util.Log
+import com.payzone.transaction.client.handlers.MessageResponseHandler
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.util.Objects
+import java.util.zip.GZIPInputStream
 
-import com.payzone.transaction.client.handlers.MessageResponseHandler;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
-
-public class ApiClient {
-    static final String TAG = ApiClient.class.getSimpleName();
-    private final Handler handler = new Handler(Looper.getMainLooper());
+class ApiClient(ctx: Context, messenger: Messenger?) {
 
     /** Number of bytes prepended to the GZIP payload before Base64 encoding. */
-    private static final int GZIP_HEADER_SKIP_BYTES = 4;
+    private val GZIP_HEADER_SKIP_BYTES = 4
+
     /** How long to wait for the service to bind before reporting a timeout failure. */
-    private static final int SERVICE_BIND_TIMEOUT_SECONDS = 20;
+    private val SERVICE_BIND_TIMEOUT_MS = 20_000L
 
-    private static final String PAYZONE_SERVICE_PACKAGE = "com.payzone.transaction";
+    private val ctx: Context = ctx.getApplicationContext()
 
-    /**
-     * Messenger for communicating with the service.
-     */
-    Messenger mService;
-    Context ctx;
-    public MessageResponseHandler messageResponseHandler;
-    public Messenger replyMessenger;
-    //boolean variable to keep a check on service bind and unbind event
-    public boolean mBound = false;
-    private ServiceConnection mConnection;
-    private boolean isKeyInserted = false;
-    private boolean isBoxConnected = false;
-    private volatile CountDownLatch serviceBoundLatch = new CountDownLatch(1);
-    final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle extras = intent.getExtras();
+    var messageResponseHandler: MessageResponseHandler? = null
+    var replyMessenger: Messenger
+    @JvmField var mBound = false
+    var mService: Messenger? = null
+
+    private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    @Volatile
+    private var serviceBoundDeferred = CompletableDeferred<Unit>()
+
+    private var isKeyInserted = false
+    private var isBoxConnected = false
+
+    private val mConnection: ServiceConnection
+
+    val mHandleMessageReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val extras = intent.extras
             if (extras != null) {
-                isKeyInserted = extras.getBoolean(MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED);
+                isKeyInserted = extras.getBoolean(MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED)
             }
         }
-    };
-    private final BroadcastReceiver mHandleBoxStatusMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle extras = intent.getExtras();
+    }
+
+    private val mHandleBoxStatusMessageReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val extras = intent.extras
             if (extras != null) {
-                isBoxConnected = extras.getBoolean(MessageConstants.RESP_TALEXUS_BOX_STATUS);
+                isBoxConnected = extras.getBoolean(MessageConstants.RESP_TALEXUS_BOX_STATUS)
             }
         }
-    };
-
-    public ApiClient(Context ctx, Messenger messenger) {
-        this.ctx = ctx.getApplicationContext();
-        if(messenger != null) {
-            this.replyMessenger = messenger;
-        } else { // Use Default MessageResponseHandler from Library
-            this.messageResponseHandler = new MessageResponseHandler();
-            this.replyMessenger = new Messenger(messageResponseHandler);
-        }
-
-        this.mConnection = new ServiceConnection() {
-            public void onServiceConnected(ComponentName className, IBinder service) {
-                if (!PAYZONE_SERVICE_PACKAGE.equals(className.getPackageName())) {
-                    Log.e(TAG, "Rejecting connection from unexpected package: " + className.getPackageName());
-                    ctx.unbindService(mConnection);
-                    return;
-                }
-                mService = new Messenger(service);
-                mBound = true;
-                serviceBoundLatch.countDown();
-                Log.d(TAG, "Service Connection Established");
-                fetchConfigData();
-            }
-
-            public void onServiceDisconnected(ComponentName className) {
-                // This is called when the connection with the service has been
-                // unexpectedly disconnected -- that is, its process crashed.
-                mService = null;
-                mBound = false;
-                serviceBoundLatch = new CountDownLatch(1);
-            }
-        };
     }
 
-    public void initService() {
-        registerReceiverCompat(mHandleMessageReceiver, new IntentFilter(MessageConstants.ACTION_KEY_INSERTED));
-        registerReceiverCompat(mHandleBoxStatusMessageReceiver, new IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS));
-        Intent intent = new Intent();
-        intent.setComponent(
-                new ComponentName(PAYZONE_SERVICE_PACKAGE,
-                        PAYZONE_SERVICE_PACKAGE + ".services.TransactionService"));
-        boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        Log.d(TAG, "Binding in progress: " + bindResult);
-    }
-
-    /**
-     * To destroy the service. Bringing back this for backward compatibility
-     */
-    public boolean destroyService(){
-        ctx.unregisterReceiver(mHandleMessageReceiver);
-        ctx.unregisterReceiver(mHandleBoxStatusMessageReceiver);
-        if (mBound) {
-            ctx.unbindService(mConnection);
-            mBound = false;
-        }
-        return true;
-    }
-
-    public void fetchConfigData() {
-        boolean res = fetchMyConfigData();
-        Log.d(TAG, "Fetch Config Data: "+ res);
-    }
-
-    private boolean fetchMyConfigData() {
-        return sendMessage(
-                MessageConstants.MSG_CONFIG_SETUP,
-                MessageConstants.RESP_CONFIG_SETUP,
-                ""
-        );
-    }
-
-    public boolean initTalexus() {
-        return sendMessage(
-                MessageConstants.MSG_INIT_TALEXUS,
-                MessageConstants.RESP_INIT_TALEXUS,
-                ""
-        );
-    }
-
-    public boolean stopTalexus() {
-        return sendMessage(
-                MessageConstants.MSG_STOP_TALEXUS,
-                MessageConstants.RESP_STOP_TALEXUS,
-                ""
-        );
-    }
-
-    public boolean registerDevice(JSONObject jsonParams) throws JSONException {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        JSONObject registerJsonObj = new JSONObject();
-        registerJsonObj.put("terminal", jsonParams);
-        return sendMessage(
-                MessageConstants.MSG_REGISTER_DEVICE,
-                MessageConstants.RESP_REGISTER_DEVICE,
-                registerJsonObj.toString()
-        );
-    }
-
-    public boolean initTransaction(JSONObject jsonParams) throws JSONException {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        JSONObject purchaseJsonObj = new JSONObject();
-        purchaseJsonObj.put("purchase", jsonParams);
-        return sendMessage(
-                MessageConstants.MSG_INIT_TRANSACTION,
-                MessageConstants.RESP_INIT_TRANSACTION,
-                purchaseJsonObj.toString()
-        );
-    }
-
-    public boolean completeTransaction(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_COMPLETE_TRANS,
-                MessageConstants.RESP_COMPLETE_TRANS,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean markTransactionSuccess(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_MARK_TRANS_SUCCESS,
-                MessageConstants.RESP_MARK_TRANS_SUCCESS,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean markTransactionFailed(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_MARK_TRANS_FAILED,
-                MessageConstants.RESP_MARK_TRANS_FAILED,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean markReceiptPrinted(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_MARK_RECEIPT_PRINTED,
-                MessageConstants.RESP_MARK_RECEIPT_PRINTED,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean getToken(String tId) {
-        Objects.requireNonNull(tId, "tId must not be null");
-        return sendMessage(
-                MessageConstants.MSG_GET_TOKEN,
-                MessageConstants.RESP_GET_TOKEN,
-                tId
-        );
-    }
-
-    public boolean getTokenBySerialNumber(String serialNumber) {
-        Objects.requireNonNull(serialNumber, "serialNumber must not be null");
-        return sendMessage(
-                MessageConstants.MSG_GET_TOKEN_BY_SERIAL_NUMBER,
-                MessageConstants.RESP_GET_TOKEN_BY_SERIAL_NUMBER,
-                serialNumber
-        );
-    }
-
-    public boolean startSession(JSONObject jsonParams) throws JSONException {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        JSONObject sessionJsonObj = new JSONObject();
-        sessionJsonObj.put("session", jsonParams);
-        return sendMessage(
-                MessageConstants.MSG_START_SESSION,
-                MessageConstants.RESP_START_SESSION,
-                sessionJsonObj.toString()
-        );
-    }
-
-    public boolean storeCashierId(String cashierId) {
-        Objects.requireNonNull(cashierId, "cashierId must not be null");
-        return sendMessage(
-                MessageConstants.MSG_STORE_CID,
-                MessageConstants.RESP_STORE_CID,
-                cashierId
-        );
-    }
-
-    public boolean isTransactionReady() {
-        return sendMessage(
-                MessageConstants.MSG_IS_TRANSACTION_READY,
-                MessageConstants.RESP_IS_TRANSACTION_READY,
-                "");
-    }
-
-    public boolean readKey() {
-        return sendMessage(
-                MessageConstants.MSG_TALEXUS_READ_KEY,
-                MessageConstants.RESP_TALEXUS_READ_KEY,
-                ""
-        );
-    }
-
-    public boolean addCredit(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_TALEXUS_ADD_CREDIT,
-                MessageConstants.RESP_TALEXUS_ADD_CREDIT,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean rti(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_TALEXUS_RTI,
-                MessageConstants.RESP_TALEXUS_RTI,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean pzAddCredit(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.PZ_MSG_TALEXUS_ADD_CREDIT,
-                MessageConstants.RESP_TALEXUS_ADD_CREDIT,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean pzRti(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.PZ_MSG_TALEXUS_RTI,
-                MessageConstants.RESP_TALEXUS_RTI,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean isKeyInserted() {
-        return sendMessage(
-                MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED,
-                MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED,
-                ""
-        );
-    }
-
-    public boolean isBoxConnected() {
-        return sendMessage(
-                MessageConstants.MSG_TALEXUS_BOX_CONNECTED,
-                MessageConstants.RESP_TALEXUS_BOX_STATUS,
-                ""
-        );
-    }
-
-    public boolean reversal(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_TALEXUS_REVERSE_CREDIT,
-                MessageConstants.RESP_TALEXUS_REVERSE_CREDIT,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean nspHotcard(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_NSP_HOT_CARD,
-                MessageConstants.RESP_QUANTUM_NSP_HOT_CARD,
-                jsonParams.toString()
-        );
-    }
-    public boolean securityKeys(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_SECURITY_KEYS,
-                MessageConstants.RESP_QUANTUM_SECURITY_KEYS,
-                jsonParams.toString()
-        );
-    }
-    public boolean localSecretCode(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_LOCAL_SECRET_CODE,
-                MessageConstants.RESP_QUANTUM_LOCAL_SECRET_CODE,
-                jsonParams.toString()
-        );
-    }
-    public boolean csRegional(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_CS_REGIONAL,
-                MessageConstants.RESP_QUANTUM_CS_REGIONAL,
-                jsonParams.toString()
-        );
-    }
-    public boolean quantumTransactionComplete(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_TRANSACTION_COMPLETE,
-                MessageConstants.RESP_QUANTUM_TRANSACTION_COMPLETE,
-                jsonParams.toString()
-        );
-    }
-    public boolean quantumRtiTransaction(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_RTI,
-                MessageConstants.RESP_QUANTUM_RTI,
-                jsonParams.toString()
-        );
-    }
-    public boolean sale(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_QUANTUM_SALE,
-                MessageConstants.RESP_QUANTUM_SALE,
-                jsonParams.toString()
-        );
-    }
-    public boolean openBasket(String basketId) {
-        Objects.requireNonNull(basketId, "basketId must not be null");
-        return sendMessage(
-                MessageConstants.MSG_OPEN_BASKET,
-                MessageConstants.RESP_OPEN_BASKET,
-                basketId
-        );
-    }
-    public boolean closeBasket(String basketId) {
-        Objects.requireNonNull(basketId, "basketId must not be null");
-        return sendMessage(
-                MessageConstants.MSG_CLOSE_BASKET,
-                MessageConstants.RESP_CLOSE_BASKET,
-                basketId
-        );
-    }
-
-    public boolean validateKeypadCode(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_VALIDATE_KEYPAD_CODE,
-                MessageConstants.RESP_VALIDATE_KEYPAD_CODE,
-                jsonParams.toString()
-        );
-    }
-
-    public boolean keypadPurchase(JSONObject jsonParams) {
-        Objects.requireNonNull(jsonParams, "jsonParams must not be null");
-        return sendMessage(
-                MessageConstants.MSG_KEYPAD_PURCHASE,
-                MessageConstants.RESP_KEYPAD_PURCHASE,
-                jsonParams.toString()
-        );
-    }
-
-    public static String decompressData(String zipText) {
-        if (zipText == null) return "";
-        return decompressBytes(Base64.decode(zipText, Base64.DEFAULT));
-    }
-
-    static String decompressBytes(byte[] compressed) {
-        if (compressed == null || compressed.length <= GZIP_HEADER_SKIP_BYTES) {
-            return "";
-        }
-        try (GZIPInputStream gzipInputStream = new GZIPInputStream(
-                     new ByteArrayInputStream(compressed, GZIP_HEADER_SKIP_BYTES,
-                             compressed.length - GZIP_HEADER_SKIP_BYTES));
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = gzipInputStream.read(buffer)) != -1) {
-                baos.write(buffer, 0, bytesRead);
-            }
-            return new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to decompress data", e);
-            return "";
-        }
-    }
-
-    /**
-     * Registers a broadcast receiver with {@code RECEIVER_NOT_EXPORTED} on API 33+
-     * to prevent other apps from sending spoofed broadcasts.
-     */
-    private void registerReceiverCompat(BroadcastReceiver receiver, IntentFilter filter) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ctx.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+    init {
+        if (messenger != null) {
+            replyMessenger = messenger
         } else {
-            ctx.registerReceiver(receiver, filter);
+            messageResponseHandler = MessageResponseHandler()
+            replyMessenger = Messenger(messageResponseHandler)
+        }
+
+        mConnection = object : ServiceConnection {
+            override fun onServiceConnected(className: ComponentName, service: IBinder) {
+                if (PAYZONE_SERVICE_PACKAGE != className.packageName) {
+                    Log.e(TAG, "Rejecting connection from unexpected package: ${className.packageName}")
+                    this@ApiClient.ctx.unbindService(this)
+                    return
+                }
+                mService = Messenger(service)
+                mBound = true
+                serviceBoundDeferred.complete(Unit)
+                Log.d(TAG, "Service Connection Established")
+                fetchConfigData()
+            }
+
+            override fun onServiceDisconnected(className: ComponentName) {
+                mService = null
+                mBound = false
+                serviceBoundDeferred = CompletableDeferred()
+            }
         }
     }
 
-    boolean handleSendFailure(int request, Exception exception) {
-        if (exception instanceof InterruptedException) {
-            Thread.currentThread().interrupt();
+    fun initService() {
+        registerReceiverCompat(mHandleMessageReceiver, IntentFilter(MessageConstants.ACTION_KEY_INSERTED))
+        registerReceiverCompat(mHandleBoxStatusMessageReceiver, IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS))
+        val intent = Intent().apply {
+            component = ComponentName(
+                PAYZONE_SERVICE_PACKAGE,
+                "$PAYZONE_SERVICE_PACKAGE.services.TransactionService"
+            )
         }
-        Log.e(TAG, "Message sending failed for request: " + request, exception);
-        try {
-            Message msg = new Message();
-            msg.what = request;
-            Bundle data = new Bundle();
-            data.putString(MessageConstants.RESP_SEND_FAILURE_REASON, exception.getMessage());
-            msg.setData(data);
-            replyMessenger.send(msg);
-        } catch (RemoteException e) {
-            Log.e(TAG, "Failed to deliver send failure notification for request: " + request, e);
-        }
-        return false;
+        val bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
+        Log.d(TAG, "Binding in progress: $bindResult")
     }
 
-    private boolean sendMessage(int request, String responseKey, String payload) {
-        return handler.postDelayed(() -> {
+    fun destroyService(): Boolean {
+        ctx.unregisterReceiver(mHandleMessageReceiver)
+        ctx.unregisterReceiver(mHandleBoxStatusMessageReceiver)
+        if (mBound) {
+            ctx.unbindService(mConnection)
+            mBound = false
+        }
+        serviceScope.cancel()
+        return true
+    }
+
+    fun fetchConfigData() {
+        val res = fetchMyConfigData()
+        Log.d(TAG, "Fetch Config Data: $res")
+    }
+
+    private fun fetchMyConfigData() = sendMessage(
+        MessageConstants.MSG_CONFIG_SETUP,
+        MessageConstants.RESP_CONFIG_SETUP,
+        ""
+    )
+
+    fun initTalexus() = sendMessage(MessageConstants.MSG_INIT_TALEXUS, MessageConstants.RESP_INIT_TALEXUS, "")
+
+    fun stopTalexus() = sendMessage(MessageConstants.MSG_STOP_TALEXUS, MessageConstants.RESP_STOP_TALEXUS, "")
+
+    @Throws(JSONException::class)
+    fun registerDevice(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        val registerJsonObj = JSONObject()
+        registerJsonObj.put("terminal", jsonParams)
+        return sendMessage(MessageConstants.MSG_REGISTER_DEVICE, MessageConstants.RESP_REGISTER_DEVICE, registerJsonObj.toString())
+    }
+
+    @Throws(JSONException::class)
+    fun initTransaction(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        val purchaseJsonObj = JSONObject()
+        purchaseJsonObj.put("purchase", jsonParams)
+        return sendMessage(MessageConstants.MSG_INIT_TRANSACTION, MessageConstants.RESP_INIT_TRANSACTION, purchaseJsonObj.toString())
+    }
+
+    fun completeTransaction(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_COMPLETE_TRANS, MessageConstants.RESP_COMPLETE_TRANS, jsonParams.toString())
+    }
+
+    fun markTransactionSuccess(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_MARK_TRANS_SUCCESS, MessageConstants.RESP_MARK_TRANS_SUCCESS, jsonParams.toString())
+    }
+
+    fun markTransactionFailed(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_MARK_TRANS_FAILED, MessageConstants.RESP_MARK_TRANS_FAILED, jsonParams.toString())
+    }
+
+    fun markReceiptPrinted(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_MARK_RECEIPT_PRINTED, MessageConstants.RESP_MARK_RECEIPT_PRINTED, jsonParams.toString())
+    }
+
+    fun getToken(tId: String): Boolean {
+        Objects.requireNonNull(tId, "tId must not be null")
+        return sendMessage(MessageConstants.MSG_GET_TOKEN, MessageConstants.RESP_GET_TOKEN, tId)
+    }
+
+    fun getTokenBySerialNumber(serialNumber: String): Boolean {
+        Objects.requireNonNull(serialNumber, "serialNumber must not be null")
+        return sendMessage(MessageConstants.MSG_GET_TOKEN_BY_SERIAL_NUMBER, MessageConstants.RESP_GET_TOKEN_BY_SERIAL_NUMBER, serialNumber)
+    }
+
+    @Throws(JSONException::class)
+    fun startSession(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        val sessionJsonObj = JSONObject()
+        sessionJsonObj.put("session", jsonParams)
+        return sendMessage(MessageConstants.MSG_START_SESSION, MessageConstants.RESP_START_SESSION, sessionJsonObj.toString())
+    }
+
+    fun storeCashierId(cashierId: String): Boolean {
+        Objects.requireNonNull(cashierId, "cashierId must not be null")
+        return sendMessage(MessageConstants.MSG_STORE_CID, MessageConstants.RESP_STORE_CID, cashierId)
+    }
+
+    fun isTransactionReady() = sendMessage(MessageConstants.MSG_IS_TRANSACTION_READY, MessageConstants.RESP_IS_TRANSACTION_READY, "")
+
+    fun readKey() = sendMessage(MessageConstants.MSG_TALEXUS_READ_KEY, MessageConstants.RESP_TALEXUS_READ_KEY, "")
+
+    fun addCredit(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_TALEXUS_ADD_CREDIT, MessageConstants.RESP_TALEXUS_ADD_CREDIT, jsonParams.toString())
+    }
+
+    fun rti(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_TALEXUS_RTI, MessageConstants.RESP_TALEXUS_RTI, jsonParams.toString())
+    }
+
+    fun pzAddCredit(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.PZ_MSG_TALEXUS_ADD_CREDIT, MessageConstants.RESP_TALEXUS_ADD_CREDIT, jsonParams.toString())
+    }
+
+    fun pzRti(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.PZ_MSG_TALEXUS_RTI, MessageConstants.RESP_TALEXUS_RTI, jsonParams.toString())
+    }
+
+    fun isKeyInserted() = sendMessage(MessageConstants.MSG_TALEXUS_IS_KEY_INSERTED, MessageConstants.RESP_TALEXUS_IS_KEY_INSERTED, "")
+
+    fun isBoxConnected() = sendMessage(MessageConstants.MSG_TALEXUS_BOX_CONNECTED, MessageConstants.RESP_TALEXUS_BOX_STATUS, "")
+
+    fun reversal(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_TALEXUS_REVERSE_CREDIT, MessageConstants.RESP_TALEXUS_REVERSE_CREDIT, jsonParams.toString())
+    }
+
+    fun nspHotcard(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_QUANTUM_NSP_HOT_CARD, MessageConstants.RESP_QUANTUM_NSP_HOT_CARD, jsonParams.toString())
+    }
+
+    fun securityKeys(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_QUANTUM_SECURITY_KEYS, MessageConstants.RESP_QUANTUM_SECURITY_KEYS, jsonParams.toString())
+    }
+
+    fun localSecretCode(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_QUANTUM_LOCAL_SECRET_CODE, MessageConstants.RESP_QUANTUM_LOCAL_SECRET_CODE, jsonParams.toString())
+    }
+
+    fun csRegional(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_QUANTUM_CS_REGIONAL, MessageConstants.RESP_QUANTUM_CS_REGIONAL, jsonParams.toString())
+    }
+
+    fun quantumTransactionComplete(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_QUANTUM_TRANSACTION_COMPLETE, MessageConstants.RESP_QUANTUM_TRANSACTION_COMPLETE, jsonParams.toString())
+    }
+
+    fun quantumRtiTransaction(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_QUANTUM_RTI, MessageConstants.RESP_QUANTUM_RTI, jsonParams.toString())
+    }
+
+    fun sale(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_QUANTUM_SALE, MessageConstants.RESP_QUANTUM_SALE, jsonParams.toString())
+    }
+
+    fun openBasket(basketId: String): Boolean {
+        Objects.requireNonNull(basketId, "basketId must not be null")
+        return sendMessage(MessageConstants.MSG_OPEN_BASKET, MessageConstants.RESP_OPEN_BASKET, basketId)
+    }
+
+    fun closeBasket(basketId: String): Boolean {
+        Objects.requireNonNull(basketId, "basketId must not be null")
+        return sendMessage(MessageConstants.MSG_CLOSE_BASKET, MessageConstants.RESP_CLOSE_BASKET, basketId)
+    }
+
+    fun validateKeypadCode(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_VALIDATE_KEYPAD_CODE, MessageConstants.RESP_VALIDATE_KEYPAD_CODE, jsonParams.toString())
+    }
+
+    fun keypadPurchase(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sendMessage(MessageConstants.MSG_KEYPAD_PURCHASE, MessageConstants.RESP_KEYPAD_PURCHASE, jsonParams.toString())
+    }
+
+    private fun sendMessage(request: Int, responseKey: String, payload: String?): Boolean {
+        serviceScope.launch {
             try {
-                if (!serviceBoundLatch.await(SERVICE_BIND_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                    handleSendFailure(request, new RemoteException(
-                            "Service binding timed out after " + SERVICE_BIND_TIMEOUT_SECONDS + " seconds"));
-                    return;
+                withTimeout(SERVICE_BIND_TIMEOUT_MS) {
+                    serviceBoundDeferred.await()
                 }
                 if (!mBound || mService == null) {
-                    handleSendFailure(request, new RemoteException(
-                            "Service disconnected before message could be sent"));
-                    return;
+                    handleSendFailure(request, RemoteException("Service disconnected before message could be sent"))
+                    return@launch
                 }
-                Message msg = Message.obtain(null, request, 0, 0);
-                msg.replyTo = replyMessenger;
-                Bundle data = new Bundle();
-                data.putString(MessageConstants.BUNDLE_RESPONSE_KEY, responseKey);
-                data.putString(responseKey, payload);
-                data.putString(MessageConstants.BUNDLE_PACKAGE_NAME, ctx.getPackageName());
-                msg.setData(data);
-                mService.send(msg);
-                Log.d(TAG, "Message code " + request + " sent successfully");
-            } catch (RemoteException | InterruptedException e) {
-                handleSendFailure(request, e);
+                val msg = Message().apply {
+                    what = request
+                    replyTo = replyMessenger
+                    data = Bundle().apply {
+                        putString(MessageConstants.BUNDLE_RESPONSE_KEY, responseKey)
+                        putString(responseKey, payload ?: "")
+                        putString(MessageConstants.BUNDLE_PACKAGE_NAME, this@ApiClient.ctx.packageName)
+                    }
+                }
+                mService!!.send(msg)
+                Log.d(TAG, "Message code $request sent successfully")
+            } catch (e: TimeoutCancellationException) {
+                handleSendFailure(request, RemoteException("Service binding timed out after ${SERVICE_BIND_TIMEOUT_MS / 1000}s"))
+            } catch (e: RemoteException) {
+                handleSendFailure(request, e)
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+                handleSendFailure(request, e)
             }
-        }, 0);
+        }
+        return true
+    }
+
+    fun handleSendFailure(request: Int, exception: Exception): Boolean {
+        if (exception is InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+        Log.e(TAG, "Message sending failed for request: $request", exception)
+        try {
+            val msg = Message().apply {
+                what = request
+                data = Bundle().apply {
+                    putString(MessageConstants.RESP_SEND_FAILURE_REASON, exception.message)
+                }
+            }
+            replyMessenger.send(msg)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Failed to deliver send failure notification for request: $request", e)
+        }
+        return false
+    }
+
+    private fun registerReceiverCompat(receiver: BroadcastReceiver, filter: IntentFilter) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ctx.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            ctx.registerReceiver(receiver, filter)
+        }
+    }
+
+    companion object {
+        internal val TAG = ApiClient::class.java.simpleName
+        private const val PAYZONE_SERVICE_PACKAGE = "com.payzone.transaction"
+
+        @JvmStatic
+        fun decompressData(zipText: String?): String {
+            if (zipText == null) return ""
+            return decompressBytes(Base64.decode(zipText, Base64.DEFAULT))
+        }
+
+        @JvmStatic
+        fun decompressBytes(compressed: ByteArray?): String {
+            val headerSkip = 4
+            if (compressed == null || compressed.size <= headerSkip) return ""
+            return try {
+                GZIPInputStream(ByteArrayInputStream(compressed, headerSkip, compressed.size - headerSkip))
+                    .use { gzip ->
+                        ByteArrayOutputStream().use { baos ->
+                            val buffer = ByteArray(1024)
+                            var bytesRead: Int
+                            while (gzip.read(buffer).also { bytesRead = it } != -1) {
+                                baos.write(buffer, 0, bytesRead)
+                            }
+                            baos.toString(StandardCharsets.UTF_8.name())
+                        }
+                    }
+            } catch (e: IOException) {
+                Log.e(TAG, "Failed to decompress data", e)
+                ""
+            }
+        }
     }
 }

@@ -1,84 +1,83 @@
-package com.payzone.transaction.client;
+package com.payzone.transaction.client
 
-public class MessageConstants {
+object MessageConstants {
     // Request Codes
-    public static final int MSG_CONFIG_SETUP = 0;
-    public static final int MSG_REGISTER_DEVICE = 1;
-    public static final int MSG_INIT_TRANSACTION = 2;
-    public static final int MSG_COMPLETE_TRANS = 3;
-    public static final int MSG_MARK_TRANS_SUCCESS = 4;
-    public static final int MSG_MARK_TRANS_FAILED = 5;
-    public static final int MSG_MARK_RECEIPT_PRINTED = 6;
-    public static final int MSG_GET_TOKEN = 7;
-    public static final int MSG_START_SESSION = 8;
-    public static final int MSG_STORE_CID = 9;
-    public static final int MSG_IS_TRANSACTION_READY = 10;
-    public static final int MSG_GET_TOKEN_BY_SERIAL_NUMBER = 11;
-    public static final int MSG_TALEXUS_READ_KEY = 12;
-    public static final int MSG_TALEXUS_ADD_CREDIT = 13;
-    public static final int MSG_TALEXUS_RTI = 14;
-    public static final int MSG_TALEXUS_IS_KEY_INSERTED = 15;
-    public static final int MSG_TALEXUS_REVERSE_CREDIT = 16;
-    public static final int MSG_TALEXUS_BOX_CONNECTED = 24;
-    public static final int MSG_QUANTUM_SALE = 17;
-    public static final int MSG_QUANTUM_SECURITY_KEYS = 18;
-    public static final int MSG_QUANTUM_LOCAL_SECRET_CODE = 19;
-    public static final int MSG_QUANTUM_NSP_HOT_CARD = 20;
-    public static final int MSG_QUANTUM_CS_REGIONAL = 21;
-    public static final int MSG_QUANTUM_TRANSACTION_COMPLETE = 22;
-    public static final int MSG_QUANTUM_RTI = 23;
-    public static final int MSG_OPEN_BASKET = 25;
-    public static final int MSG_CLOSE_BASKET = 26;
-    public static final int MSG_INIT_TALEXUS = 27;
-    public static final int MSG_STOP_TALEXUS = 28;
-    public static final int PZ_MSG_TALEXUS_ADD_CREDIT = 29;
-    public static final int PZ_MSG_TALEXUS_RTI = 30;
-    public static final int MSG_VALIDATE_KEYPAD_CODE = 31;
-    public static final int MSG_KEYPAD_PURCHASE = 32;
+    const val MSG_CONFIG_SETUP = 0
+    const val MSG_REGISTER_DEVICE = 1
+    const val MSG_INIT_TRANSACTION = 2
+    const val MSG_COMPLETE_TRANS = 3
+    const val MSG_MARK_TRANS_SUCCESS = 4
+    const val MSG_MARK_TRANS_FAILED = 5
+    const val MSG_MARK_RECEIPT_PRINTED = 6
+    const val MSG_GET_TOKEN = 7
+    const val MSG_START_SESSION = 8
+    const val MSG_STORE_CID = 9
+    const val MSG_IS_TRANSACTION_READY = 10
+    const val MSG_GET_TOKEN_BY_SERIAL_NUMBER = 11
+    const val MSG_TALEXUS_READ_KEY = 12
+    const val MSG_TALEXUS_ADD_CREDIT = 13
+    const val MSG_TALEXUS_RTI = 14
+    const val MSG_TALEXUS_IS_KEY_INSERTED = 15
+    const val MSG_TALEXUS_REVERSE_CREDIT = 16
+    const val MSG_TALEXUS_BOX_CONNECTED = 24
+    const val MSG_QUANTUM_SALE = 17
+    const val MSG_QUANTUM_SECURITY_KEYS = 18
+    const val MSG_QUANTUM_LOCAL_SECRET_CODE = 19
+    const val MSG_QUANTUM_NSP_HOT_CARD = 20
+    const val MSG_QUANTUM_CS_REGIONAL = 21
+    const val MSG_QUANTUM_TRANSACTION_COMPLETE = 22
+    const val MSG_QUANTUM_RTI = 23
+    const val MSG_OPEN_BASKET = 25
+    const val MSG_CLOSE_BASKET = 26
+    const val MSG_INIT_TALEXUS = 27
+    const val MSG_STOP_TALEXUS = 28
+    const val PZ_MSG_TALEXUS_ADD_CREDIT = 29
+    const val PZ_MSG_TALEXUS_RTI = 30
+    const val MSG_VALIDATE_KEYPAD_CODE = 31
+    const val MSG_KEYPAD_PURCHASE = 32
 
-    // Parameter KEYS FOR
-    public static final String RESP_CONFIG_SETUP = "configSetup";
-    public static final String RESP_REGISTER_DEVICE = "registerDevice";
-    public static final String RESP_INIT_TRANSACTION = "initTransaction";
-    public static final String RESP_COMPLETE_TRANS = "completeTransaction";
-    public static final String RESP_MARK_TRANS_SUCCESS = "markTransSuccess";
-    public static final String RESP_MARK_TRANS_FAILED = "markTransFailed";
-    public static final String RESP_MARK_RECEIPT_PRINTED = "markReceiptPrinted";
-    public static final String RESP_GET_TOKEN = "getToken";
-    public static final String RESP_GET_TOKEN_BY_SERIAL_NUMBER = "getTokenBySerialNumber";
-    public static final String RESP_START_SESSION = "startSession";
-    public static final String RESP_STORE_CID = "storeCid";
-    public static final String RESP_IS_TRANSACTION_READY = "isTransactionReady";
-    public static final String RESP_TALEXUS_READ_KEY = "readKey";
-    public static final String RESP_TALEXUS_ADD_CREDIT = "addCredit";
-    public static final String RESP_TALEXUS_RTI = "rti";
-    public static final String RESP_TALEXUS_IS_KEY_INSERTED = "isKeyInserted";
-    public static final String RESP_TALEXUS_REVERSE_CREDIT = "reversal";
-    public static final String RESP_TALEXUS_BOX_STATUS = "talexusBoxConnected";
-    public static final String RESP_QUANTUM_SALE = "sale";
-    public static final String RESP_QUANTUM_SECURITY_KEYS = "securityKeys";
-    public static final String RESP_QUANTUM_LOCAL_SECRET_CODE = "localSecretCode";
-    public static final String RESP_QUANTUM_NSP_HOT_CARD = "nspHotcard";
-    public static final String RESP_QUANTUM_CS_REGIONAL = "csRegional";
-    public static final String RESP_QUANTUM_TRANSACTION_COMPLETE = "quantumTransactionComplete";
-    public static final String RESP_QUANTUM_RTI = "quantumRti";
-    public static final String RESP_OPEN_BASKET = "openBasket";
-    public static final String RESP_CLOSE_BASKET = "closeBasket";
-    public static final String RESP_INIT_TALEXUS = "initTalexus";
-    public static final String RESP_STOP_TALEXUS = "stopTalexus";
-    public static final String RESP_VALIDATE_KEYPAD_CODE = "validateKeypadCode";
-    public static final String RESP_KEYPAD_PURCHASE = "keypadPurchase";
+    // Response Keys
+    const val RESP_CONFIG_SETUP = "configSetup"
+    const val RESP_REGISTER_DEVICE = "registerDevice"
+    const val RESP_INIT_TRANSACTION = "initTransaction"
+    const val RESP_COMPLETE_TRANS = "completeTransaction"
+    const val RESP_MARK_TRANS_SUCCESS = "markTransSuccess"
+    const val RESP_MARK_TRANS_FAILED = "markTransFailed"
+    const val RESP_MARK_RECEIPT_PRINTED = "markReceiptPrinted"
+    const val RESP_GET_TOKEN = "getToken"
+    const val RESP_GET_TOKEN_BY_SERIAL_NUMBER = "getTokenBySerialNumber"
+    const val RESP_START_SESSION = "startSession"
+    const val RESP_STORE_CID = "storeCid"
+    const val RESP_IS_TRANSACTION_READY = "isTransactionReady"
+    const val RESP_TALEXUS_READ_KEY = "readKey"
+    const val RESP_TALEXUS_ADD_CREDIT = "addCredit"
+    const val RESP_TALEXUS_RTI = "rti"
+    const val RESP_TALEXUS_IS_KEY_INSERTED = "isKeyInserted"
+    const val RESP_TALEXUS_REVERSE_CREDIT = "reversal"
+    const val RESP_TALEXUS_BOX_STATUS = "talexusBoxConnected"
+    const val RESP_QUANTUM_SALE = "sale"
+    const val RESP_QUANTUM_SECURITY_KEYS = "securityKeys"
+    const val RESP_QUANTUM_LOCAL_SECRET_CODE = "localSecretCode"
+    const val RESP_QUANTUM_NSP_HOT_CARD = "nspHotcard"
+    const val RESP_QUANTUM_CS_REGIONAL = "csRegional"
+    const val RESP_QUANTUM_TRANSACTION_COMPLETE = "quantumTransactionComplete"
+    const val RESP_QUANTUM_RTI = "quantumRti"
+    const val RESP_OPEN_BASKET = "openBasket"
+    const val RESP_CLOSE_BASKET = "closeBasket"
+    const val RESP_INIT_TALEXUS = "initTalexus"
+    const val RESP_STOP_TALEXUS = "stopTalexus"
+    const val RESP_VALIDATE_KEYPAD_CODE = "validateKeypadCode"
+    const val RESP_KEYPAD_PURCHASE = "keypadPurchase"
     /** Bundle key present when a message could not be delivered to the service. */
-    public static final String RESP_SEND_FAILURE_REASON = "sendFailureReason";
+    const val RESP_SEND_FAILURE_REASON = "sendFailureReason"
 
     // Internal IPC bundle routing keys
     /** Bundle key whose value names the response key to expect in the reply. */
-    public static final String BUNDLE_RESPONSE_KEY = "responseKey";
+    const val BUNDLE_RESPONSE_KEY = "responseKey"
     /** Bundle key whose value is the calling app's package name. */
-    public static final String BUNDLE_PACKAGE_NAME = "packageName";
+    const val BUNDLE_PACKAGE_NAME = "packageName"
 
-    // Intent actions to receive the broadcasts
-    public static final String ACTION_KEY_INSERTED = "talexus.key.inserted";
-    public static final String ACTION_TALEXUS_BOX_STATUS = "talexus.box.connected";
-
+    // Intent actions
+    const val ACTION_KEY_INSERTED = "talexus.key.inserted"
+    const val ACTION_TALEXUS_BOX_STATUS = "talexus.box.connected"
 }

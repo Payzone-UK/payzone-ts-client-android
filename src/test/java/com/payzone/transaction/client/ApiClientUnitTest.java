@@ -58,7 +58,7 @@ public class ApiClientUnitTest {
 
     @Test
     public void serviceBindingDone() {
-        assertEquals(false, apiClient.mBound);
+        assertFalse(apiClient.mBound);
     }
 
     @Test
@@ -72,19 +72,19 @@ public class ApiClientUnitTest {
         obj.put("barcode", "267693243349691");
         obj.put("deviceId", "1545D2053");
         obj.put("tId", "49691");
-        assertEquals(false, apiClient.registerDevice(obj));
+        assertTrue(apiClient.registerDevice(obj));
         assertThrows(NullPointerException.class, () -> apiClient.registerDevice(null));
     }
 
     @Test
     public void getToken() {
-        assertEquals(false, apiClient.getToken("49691"));
+        assertTrue(apiClient.getToken("49691"));
         assertThrows(NullPointerException.class, () -> apiClient.getToken(null));
     }
 
     @Test
     public void getTokenBySerialNumber() {
-        assertEquals(false, apiClient.getTokenBySerialNumber("1545D2053"));
+        assertTrue(apiClient.getTokenBySerialNumber("1545D2053"));
         assertThrows(NullPointerException.class, () -> apiClient.getTokenBySerialNumber(null));
     }
 
@@ -92,193 +92,174 @@ public class ApiClientUnitTest {
     public void startSession() throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("pin", 1234);
-        assertEquals(false, apiClient.startSession(obj));
+        assertTrue(apiClient.startSession(obj));
         assertThrows(NullPointerException.class, () -> apiClient.startSession(null));
     }
 
     @Test
     public void initTransaction() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.initTransaction(obj));
+        assertTrue(apiClient.initTransaction(obj));
         assertThrows(NullPointerException.class, () -> apiClient.initTransaction(null));
     }
 
     @Test
     public void completeTransaction() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.completeTransaction(obj));
+        assertTrue(apiClient.completeTransaction(obj));
         assertThrows(NullPointerException.class, () -> apiClient.completeTransaction(null));
     }
 
     @Test
     public void markTransactionSuccess() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.markTransactionSuccess(obj));
-        assertThrows(NullPointerException.class, () -> { apiClient.markTransactionSuccess(null);});
+        assertTrue(apiClient.markTransactionSuccess(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.markTransactionSuccess(null));
     }
 
     @Test
     public void markTransactionFailed() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.markTransactionFailed(obj));
-        assertThrows(NullPointerException.class, () -> { apiClient.markTransactionFailed(null);});
+        assertTrue(apiClient.markTransactionFailed(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.markTransactionFailed(null));
     }
 
     @Test
     public void markReceiptPrinted() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.markReceiptPrinted(obj));
+        assertTrue(apiClient.markReceiptPrinted(obj));
         assertThrows(NullPointerException.class, () -> { apiClient.markReceiptPrinted(null);});
     }
 
     @Test
     public void storeCashierId() {
-        assertEquals(false, apiClient.storeCashierId("1234"));
-        assertThrows(NullPointerException.class, () -> { apiClient.storeCashierId(null);});
+        assertTrue(apiClient.storeCashierId("1234"));
+        assertThrows(NullPointerException.class, () -> apiClient.storeCashierId(null));
     }
 
     @Test
     public void isTransactionReady() {
-        assertEquals(false, apiClient.isTransactionReady());
+        assertTrue(apiClient.isTransactionReady());
     }
 
     @Test
     public void readKey() throws JSONException {
-        JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.readKey());
+        assertTrue(apiClient.readKey());
     }
 
     @Test
     public void addCredit() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.addCredit(obj));
-        assertThrows(NullPointerException.class, () -> { apiClient.addCredit(null);});
+        assertTrue(apiClient.addCredit(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.addCredit(null));
     }
 
     @Test
     public void rti() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.rti(obj));
-        assertThrows(NullPointerException.class, () -> { apiClient.rti(null);});
+        assertTrue(apiClient.rti(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.rti(null));
     }
 
     @Test
     public void pzAddCredit() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.pzAddCredit(obj));
+        assertTrue(apiClient.pzAddCredit(obj));
         assertThrows(NullPointerException.class, () -> apiClient.pzAddCredit(null));
     }
 
     @Test
     public void pzRti() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.pzRti(obj));
+        assertTrue(apiClient.pzRti(obj));
         assertThrows(NullPointerException.class, () -> apiClient.pzRti(null));
     }
 
     @Test
     public void isKeyInserted() throws JSONException {
-        JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.isKeyInserted());
+        assertTrue(apiClient.isKeyInserted());
     }
-  
+
     @Test
     public void reversal() throws JSONException {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.reversal(obj));
-        assertThrows(NullPointerException.class, () -> { apiClient.reversal(null);});
+        assertTrue(apiClient.reversal(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.reversal(null));
     }
 
     @Test
     public void nspHotcard() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.nspHotcard(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.nspHotcard(null);
-        });
+        assertTrue(apiClient.nspHotcard(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.nspHotcard(null));
     }
 
     @Test
     public void securityKeys() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.securityKeys(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.securityKeys(null);
-        });
+        assertTrue(apiClient.securityKeys(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.securityKeys(null));
     }
 
     @Test
     public void localSecretCode() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.localSecretCode(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.localSecretCode(null);
-        });
+        assertTrue(apiClient.localSecretCode(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.localSecretCode(null));
     }
 
     @Test
     public void csRegional() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.csRegional(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.csRegional(null);
-        });
+        assertTrue(apiClient.csRegional(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.csRegional(null));
     }
 
     @Test
     public void quantumTransactionComplete() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.quantumTransactionComplete(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.quantumTransactionComplete(null);
-        });
+        assertTrue(apiClient.quantumTransactionComplete(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.quantumTransactionComplete(null));
     }
 
     @Test
     public void quantumRtiTransaction() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.quantumRtiTransaction(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.quantumRtiTransaction(null);
-        });
+        assertTrue(apiClient.quantumRtiTransaction(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.quantumRtiTransaction(null));
     }
 
     @Test
     public void sale() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.sale(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.sale(null);
-        });
+        assertTrue(apiClient.sale(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.sale(null));
     }
+
     @Test
     public void openBasket() {
-        assertEquals(false, apiClient.openBasket("123456-121"));
+        assertTrue(apiClient.openBasket("123456-121"));
         assertThrows(NullPointerException.class, () -> apiClient.openBasket(null));
     }
 
     @Test
     public void closeBasket() {
-        assertEquals(false, apiClient.closeBasket("12345"));
+        assertTrue(apiClient.closeBasket("12345"));
         assertThrows(NullPointerException.class, () -> apiClient.closeBasket(null));
     }
 
     @Test
     public void keypadPurchase() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.keypadPurchase(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.keypadPurchase(null);
-        });
+        assertTrue(apiClient.keypadPurchase(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.keypadPurchase(null));
     }
 
     @Test
     public void validateKeypadCode() {
         JSONObject obj = new JSONObject();
-        assertEquals(false, apiClient.validateKeypadCode(obj));
-        assertThrows(NullPointerException.class, () -> {
-            apiClient.validateKeypadCode(null);
-        });
+        assertTrue(apiClient.validateKeypadCode(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.validateKeypadCode(null));
     }
 
     @Test
