@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -31,6 +32,8 @@ import java.util.zip.GZIPInputStream;
 public class ApiClient {
     static final String TAG = ApiClient.class.getSimpleName();
     private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private static final String PAYZONE_SERVICE_PACKAGE = "com.payzone.transaction";
 
     /**
      * Messenger for communicating with the service.
@@ -86,14 +89,14 @@ public class ApiClient {
     }
 
     public void initService() {
-        ctx.registerReceiver(mHandleMessageReceiver, new IntentFilter(MessageConstants.ACTION_KEY_INSERTED));
-        ctx.registerReceiver(mHandleBoxStatusMessageReceiver, new IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS));
+        registerReceiverCompat(mHandleMessageReceiver, new IntentFilter(MessageConstants.ACTION_KEY_INSERTED));
+        registerReceiverCompat(mHandleBoxStatusMessageReceiver, new IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS));
         Intent intent = new Intent();
         intent.setComponent(
-                new ComponentName("com.payzone.transaction",
-                        "com.payzone.transaction.services.TransactionService"));
+                new ComponentName(PAYZONE_SERVICE_PACKAGE,
+                        PAYZONE_SERVICE_PACKAGE + ".services.TransactionService"));
         boolean bindResult = ctx.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        Log.d(TAG, "Binding in progress: "+ bindResult);
+        Log.d(TAG, "Binding in progress: " + bindResult);
     }
 
     /**
@@ -402,6 +405,18 @@ public class ApiClient {
             Log.e(TAG, "Failed to decompress data", e);
         }
         return sReturn;
+    }
+
+    /**
+     * Registers a broadcast receiver with {@code RECEIVER_NOT_EXPORTED} on API 33+
+     * to prevent other apps from sending spoofed broadcasts.
+     */
+    private void registerReceiverCompat(BroadcastReceiver receiver, IntentFilter filter) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ctx.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            ctx.registerReceiver(receiver, filter);
+        }
     }
 
     boolean handleSendFailure(int request, Exception exception) {
