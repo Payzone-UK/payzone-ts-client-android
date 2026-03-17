@@ -144,6 +144,34 @@ class MessageResponseHandler : Handler(Looper.getMainLooper()) {
                 Log.d(TAG, "Keypad purchase Response received")
                 ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_KEYPAD_PURCHASE))
             }
+            MessageConstants.MSG_EPAY_VARIANTS -> {
+                Log.d(TAG, "ePay variants Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_EPAY_VARIANTS))
+            }
+            MessageConstants.MSG_EPAY_PURCHASE -> {
+                Log.d(TAG, "ePay purchase Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_EPAY_PURCHASE))
+            }
+            MessageConstants.MSG_EPAY_REVERSE -> {
+                Log.d(TAG, "ePay reversal Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_EPAY_REVERSE))
+            }
+            MessageConstants.MSG_GET_TRANSACTION -> {
+                Log.d(TAG, "Get transaction by number Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_TRANSACTION_BY_NUMBER))
+            }
+            MessageConstants.MSG_STORE_MID -> {
+                Log.d(TAG, "Store merchant ID Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_STORE_MID))
+            }
+            MessageConstants.MSG_VALIDATE_BARCODE -> {
+                Log.d(TAG, "Validate barcode Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_VALIDATE_BARCODE))
+            }
+            MessageConstants.MSG_MERCHANT_CREDIT -> {
+                Log.d(TAG, "Get merchant credit Response received")
+                ApiClient.decompressData(msg.data.getString(MessageConstants.RESP_MERCHANT_CREDIT))
+            }
             else -> {
                 super.handleMessage(msg)
                 return

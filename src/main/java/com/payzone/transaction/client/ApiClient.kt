@@ -188,6 +188,38 @@ class ApiClient(ctx: Context, messenger: Messenger?) {
         return sender.send(MessageConstants.MSG_KEYPAD_PURCHASE, MessageConstants.RESP_KEYPAD_PURCHASE, jsonParams.toString())
     }
 
+    fun epayVariants(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sender.send(MessageConstants.MSG_EPAY_VARIANTS, MessageConstants.RESP_EPAY_VARIANTS, jsonParams.toString())
+    }
+
+    fun epayPurchase(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sender.send(MessageConstants.MSG_EPAY_PURCHASE, MessageConstants.RESP_EPAY_PURCHASE, jsonParams.toString())
+    }
+
+    fun epayReversal(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sender.send(MessageConstants.MSG_EPAY_REVERSE, MessageConstants.RESP_EPAY_REVERSE, jsonParams.toString())
+    }
+
+    fun getTransactionByNumber(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sender.send(MessageConstants.MSG_GET_TRANSACTION, MessageConstants.RESP_TRANSACTION_BY_NUMBER, jsonParams.toString())
+    }
+
+    fun storeMerchantId(mid: String): Boolean {
+        Objects.requireNonNull(mid, "mid must not be null")
+        return sender.send(MessageConstants.MSG_STORE_MID, MessageConstants.RESP_STORE_MID, mid)
+    }
+
+    fun validateBarcode(jsonParams: JSONObject): Boolean {
+        Objects.requireNonNull(jsonParams, "jsonParams must not be null")
+        return sender.send(MessageConstants.MSG_VALIDATE_BARCODE, MessageConstants.RESP_VALIDATE_BARCODE, jsonParams.toString())
+    }
+
+    fun getMerchantCredit() = sender.send(MessageConstants.MSG_MERCHANT_CREDIT, MessageConstants.RESP_MERCHANT_CREDIT, "")
+
     /** Exposed for testing. */
     fun handleSendFailure(request: Int, exception: Exception) = sender.handleSendFailure(request, exception)
 

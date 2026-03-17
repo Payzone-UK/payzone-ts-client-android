@@ -35,6 +35,13 @@ object MessageConstants {
     const val PZ_MSG_TALEXUS_RTI = 30
     const val MSG_VALIDATE_KEYPAD_CODE = 31
     const val MSG_KEYPAD_PURCHASE = 32
+    const val MSG_EPAY_VARIANTS = 33
+    const val MSG_EPAY_PURCHASE = 34
+    const val MSG_STORE_MID = 35
+    const val MSG_EPAY_REVERSE = 36
+    const val MSG_GET_TRANSACTION = 37
+    const val MSG_VALIDATE_BARCODE = 38
+    const val MSG_MERCHANT_CREDIT = 39
 
     // Response Keys
     const val RESP_CONFIG_SETUP = "configSetup"
@@ -68,6 +75,13 @@ object MessageConstants {
     const val RESP_STOP_TALEXUS = "stopTalexus"
     const val RESP_VALIDATE_KEYPAD_CODE = "validateKeypadCode"
     const val RESP_KEYPAD_PURCHASE = "keypadPurchase"
+    const val RESP_EPAY_VARIANTS = "epayVariants"
+    const val RESP_EPAY_PURCHASE = "epayPurchase"
+    const val RESP_STORE_MID = "storeMid"
+    const val RESP_EPAY_REVERSE = "epayReverse"
+    const val RESP_TRANSACTION_BY_NUMBER = "getTransactionByTransactionNumber"
+    const val RESP_VALIDATE_BARCODE = "validateBarcode"
+    const val RESP_MERCHANT_CREDIT = "getMerchantCredit"
     /** Bundle key present when a message could not be delivered to the service. */
     const val RESP_SEND_FAILURE_REASON = "sendFailureReason"
 
