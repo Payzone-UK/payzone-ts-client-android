@@ -16,10 +16,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew test
 
       - name: Upload test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: TestResults
           path: build/reports/tests/testDebugUnitTest/
@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew jacocoTestReport
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: CoverageReport
           path: build/reports/jacoco/jacocoTestReport/html/
@@ -50,7 +50,7 @@ jobs:
         run: ./gradlew lint
 
       - name: Upload lint report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: LintResult
           path: build/reports/lint-results*.html
@@ -61,10 +61,10 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/test/')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -84,7 +84,7 @@ jobs:
         run: echo "APP_NAME=$(basename $(ls build/outputs/aar/*debug.aar | head -n 1))" >> $GITHUB_ENV
 
       - name: Upload AAR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.APP_NAME }}
           path: build/outputs/aar/${{ env.APP_NAME }}
@@ -95,10 +95,10 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
