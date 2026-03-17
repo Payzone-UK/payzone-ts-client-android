@@ -1,7 +1,6 @@
 package com.payzone.transaction.client;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.RemoteException;
 
 import android.test.mock.MockContext;
@@ -36,20 +35,10 @@ public class ApiClientUnitTest {
     static MockContext mContext;
 
     @BeforeClass
-    public static void testSetup() throws PackageManager.NameNotFoundException {
+    public static void testSetup() {
         mContext = mock(MockContext.class);
         when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getPackageName()).thenReturn("com.payzone.transaction.client.test");
-
-//        appContext = mContext.createPackageContext("com.payzone.transaction.client.test", 0);
-//        appContext = new MockContext() {
-//
-//            @Override
-//            public String getPackageName(){
-//                return "com.payzone.transaction.client.test";
-//            }
-//        };
-
         apiClient = new ApiClient(mContext, null);
         apiClient.initService();
         apiClient.fetchConfigData();
@@ -104,28 +93,28 @@ public class ApiClientUnitTest {
     }
 
     @Test
-    public void completeTransaction() throws JSONException {
+    public void completeTransaction() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.completeTransaction(obj));
         assertThrows(NullPointerException.class, () -> apiClient.completeTransaction(null));
     }
 
     @Test
-    public void markTransactionSuccess() throws JSONException {
+    public void markTransactionSuccess() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.markTransactionSuccess(obj));
         assertThrows(NullPointerException.class, () -> apiClient.markTransactionSuccess(null));
     }
 
     @Test
-    public void markTransactionFailed() throws JSONException {
+    public void markTransactionFailed() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.markTransactionFailed(obj));
         assertThrows(NullPointerException.class, () -> apiClient.markTransactionFailed(null));
     }
 
     @Test
-    public void markReceiptPrinted() throws JSONException {
+    public void markReceiptPrinted() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.markReceiptPrinted(obj));
         assertThrows(NullPointerException.class, () -> { apiClient.markReceiptPrinted(null);});
@@ -143,45 +132,45 @@ public class ApiClientUnitTest {
     }
 
     @Test
-    public void readKey() throws JSONException {
+    public void readKey() {
         assertTrue(apiClient.readKey());
     }
 
     @Test
-    public void addCredit() throws JSONException {
+    public void addCredit() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.addCredit(obj));
         assertThrows(NullPointerException.class, () -> apiClient.addCredit(null));
     }
 
     @Test
-    public void rti() throws JSONException {
+    public void rti() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.rti(obj));
         assertThrows(NullPointerException.class, () -> apiClient.rti(null));
     }
 
     @Test
-    public void pzAddCredit() throws JSONException {
+    public void pzAddCredit() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.pzAddCredit(obj));
         assertThrows(NullPointerException.class, () -> apiClient.pzAddCredit(null));
     }
 
     @Test
-    public void pzRti() throws JSONException {
+    public void pzRti() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.pzRti(obj));
         assertThrows(NullPointerException.class, () -> apiClient.pzRti(null));
     }
 
     @Test
-    public void isKeyInserted() throws JSONException {
+    public void isKeyInserted() {
         assertTrue(apiClient.isKeyInserted());
     }
 
     @Test
-    public void reversal() throws JSONException {
+    public void reversal() {
         JSONObject obj = new JSONObject();
         assertTrue(apiClient.reversal(obj));
         assertThrows(NullPointerException.class, () -> apiClient.reversal(null));
