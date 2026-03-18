@@ -220,8 +220,7 @@ class ApiClient(ctx: Context, messenger: Messenger?) {
 
     fun getMerchantCredit() = sender.send(MessageConstants.MSG_MERCHANT_CREDIT, MessageConstants.RESP_MERCHANT_CREDIT, "")
 
-    /** Exposed for testing. */
-    fun handleSendFailure(request: Int, exception: Exception) = sender.handleSendFailure(request, exception)
+    internal fun handleSendFailure(request: Int, exception: Exception) = sender.handleSendFailure(request, exception)
 
     companion object {
         internal val TAG = ApiClient::class.java.simpleName

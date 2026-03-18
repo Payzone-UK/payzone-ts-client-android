@@ -55,7 +55,7 @@ internal class MessageSender(
             val msg = Message().apply {
                 what = request
                 data = Bundle().apply {
-                    putString(MessageConstants.RESP_SEND_FAILURE_REASON, exception.message)
+                    putString(MessageConstants.RESP_SEND_FAILURE_REASON, exception.message ?: exception.javaClass.simpleName)
                 }
             }
             replyMessenger.send(msg)

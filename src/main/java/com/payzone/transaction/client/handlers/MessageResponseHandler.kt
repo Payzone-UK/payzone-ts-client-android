@@ -15,6 +15,7 @@ class MessageResponseHandler : Handler(Looper.getMainLooper()) {
         val error = msg.data.getString(MessageConstants.RESP_SEND_FAILURE_REASON)
         if (error != null) {
             Log.e(TAG, "Send failure for request ${msg.what}: $error")
+            response = null
             return
         }
         response = when (msg.what) {

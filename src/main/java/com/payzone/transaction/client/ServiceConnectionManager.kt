@@ -28,6 +28,7 @@ internal class ServiceConnectionManager(
     var mService: Messenger? = null
     var isKeyInserted = false
     var isBoxConnected = false
+    private var receiversRegistered = false
 
     private val keyInsertedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -69,8 +70,11 @@ internal class ServiceConnectionManager(
     }
 
     fun initService() {
-        registerReceiverCompat(keyInsertedReceiver, IntentFilter(MessageConstants.ACTION_KEY_INSERTED))
-        registerReceiverCompat(boxStatusReceiver, IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS))
+        if (!receiversRegistered) {
+            registerReceiverCompat(keyInsertedReceiver, IntentFilter(MessageConstants.ACTION_KEY_INSERTED))
+            registerReceiverCompat(boxStatusReceiver, IntentFilter(MessageConstants.ACTION_TALEXUS_BOX_STATUS))
+            receiversRegistered = true
+        }
         val intent = Intent().apply {
             component = ComponentName(
                 PAYZONE_SERVICE_PACKAGE,
@@ -82,8 +86,11 @@ internal class ServiceConnectionManager(
     }
 
     fun destroyService(): Boolean {
-        appContext.unregisterReceiver(keyInsertedReceiver)
-        appContext.unregisterReceiver(boxStatusReceiver)
+        if (receiversRegistered) {
+            appContext.unregisterReceiver(keyInsertedReceiver)
+            appContext.unregisterReceiver(boxStatusReceiver)
+            receiversRegistered = false
+        }
         if (mBound) {
             appContext.unbindService(mConnection)
             mBound = false
