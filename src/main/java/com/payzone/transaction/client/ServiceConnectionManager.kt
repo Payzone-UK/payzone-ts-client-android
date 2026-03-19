@@ -18,6 +18,7 @@ import kotlinx.coroutines.cancel
 
 internal class ServiceConnectionManager(
     ctx: Context,
+    private val onBoundChanged: (Boolean) -> Unit = {},
     private val onConnected: () -> Unit
 ) {
     val appContext: Context = ctx.applicationContext
@@ -57,6 +58,7 @@ internal class ServiceConnectionManager(
             }
             mService = Messenger(service)
             mBound = true
+            onBoundChanged(true)
             serviceBoundDeferred.complete(Unit)
             Log.d(TAG, "Service Connection Established")
             onConnected()
@@ -65,6 +67,7 @@ internal class ServiceConnectionManager(
         override fun onServiceDisconnected(className: ComponentName) {
             mService = null
             mBound = false
+            onBoundChanged(false)
             serviceBoundDeferred = CompletableDeferred()
         }
     }
@@ -94,6 +97,7 @@ internal class ServiceConnectionManager(
         if (mBound) {
             appContext.unbindService(mConnection)
             mBound = false
+            onBoundChanged(false)
         }
         serviceScope.cancel()
         return true

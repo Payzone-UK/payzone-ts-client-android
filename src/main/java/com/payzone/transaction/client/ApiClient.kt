@@ -15,6 +15,10 @@ class ApiClient(ctx: Context, messenger: Messenger?) {
     private val connectionManager: ServiceConnectionManager
     private val sender: MessageSender
 
+    @JvmField
+    @Volatile
+    var mBound: Boolean = false
+
     init {
         if (messenger != null) {
             replyMessenger = messenger
@@ -22,11 +26,10 @@ class ApiClient(ctx: Context, messenger: Messenger?) {
             messageResponseHandler = MessageResponseHandler()
             replyMessenger = Messenger(messageResponseHandler)
         }
-        connectionManager = ServiceConnectionManager(ctx) { fetchConfigData() }
+        connectionManager = ServiceConnectionManager(ctx, onBoundChanged = { mBound = it }) { fetchConfigData() }
         sender = MessageSender(connectionManager, replyMessenger)
     }
 
-    val mBound: Boolean get() = connectionManager.mBound
 
     fun initService() = connectionManager.initService()
 

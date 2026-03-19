@@ -45,7 +45,7 @@ public class ApiClientUnitTest {
 
     @Test
     public void serviceBindingDone() {
-        assertFalse(apiClient.getMBound());
+        assertFalse(apiClient.mBound);
     }
 
     @Test
