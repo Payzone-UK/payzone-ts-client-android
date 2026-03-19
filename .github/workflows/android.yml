@@ -55,7 +55,7 @@ jobs:
           name: LintResult
           path: build/reports/lint-results*.html
 
-  # ── Only on push to test/** — builds a debug AAR for QA ──
+  # ── Only on push to test/** — builds debug and release AARs for QA ──
   build_test_candidate:
     needs: test
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/test/')
@@ -77,17 +77,25 @@ jobs:
         id: extract_branch
         run: echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
 
-      - name: Build AAR
+      - name: Build AARs
         run: ./gradlew -PversName=${{ steps.extract_branch.outputs.branch }} clean build
 
-      - name: Set app name
-        run: echo "APP_NAME=$(basename $(ls build/outputs/aar/*debug.aar | head -n 1))" >> $GITHUB_ENV
+      - name: Set AAR names
+        run: |
+          echo "DEBUG_AAR=$(basename $(ls build/outputs/aar/*-debug.aar))" >> $GITHUB_ENV
+          echo "RELEASE_AAR=$(basename $(ls build/outputs/aar/*-release.aar))" >> $GITHUB_ENV
 
-      - name: Upload AAR
+      - name: Upload debug AAR
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ env.APP_NAME }}
-          path: build/outputs/aar/${{ env.APP_NAME }}
+          name: ${{ env.DEBUG_AAR }}
+          path: build/outputs/aar/${{ env.DEBUG_AAR }}
+
+      - name: Upload release AAR
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.RELEASE_AAR }}
+          path: build/outputs/aar/${{ env.RELEASE_AAR }}
 
   # ── Only on push to main/master — creates a GitHub release and publishes ──
   publish_release:
