@@ -50,9 +50,9 @@ internal class ServiceConnectionManager(
     }
 
     val mConnection = object : ServiceConnection {
-        override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            if (PAYZONE_SERVICE_PACKAGE != className.packageName) {
-                Log.e(TAG, "Rejecting connection from unexpected package: ${className.packageName}")
+        override fun onServiceConnected(className: ComponentName?, service: IBinder?) {
+            if (PAYZONE_SERVICE_PACKAGE != className?.packageName) {
+                Log.e(TAG, "Rejecting connection from unexpected package: ${className?.packageName}")
                 appContext.unbindService(this)
                 return
             }
@@ -64,7 +64,7 @@ internal class ServiceConnectionManager(
             onConnected()
         }
 
-        override fun onServiceDisconnected(className: ComponentName) {
+        override fun onServiceDisconnected(className: ComponentName?) {
             mService = null
             mBound = false
             onBoundChanged(false)
