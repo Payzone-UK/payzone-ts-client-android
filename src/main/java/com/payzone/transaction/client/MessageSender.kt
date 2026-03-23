@@ -38,9 +38,6 @@ internal class MessageSender(
                 handleSendFailure(request, RemoteException("Service binding timed out after ${SERVICE_BIND_TIMEOUT_MS / 1000}s"))
             } catch (e: RemoteException) {
                 handleSendFailure(request, e)
-            } catch (e: InterruptedException) {
-                Thread.currentThread().interrupt()
-                handleSendFailure(request, e)
             }
         }
         return true

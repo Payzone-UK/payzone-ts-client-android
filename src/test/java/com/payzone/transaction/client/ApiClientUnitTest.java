@@ -250,6 +250,52 @@ public class ApiClientUnitTest {
     }
 
     @Test
+    public void epayVariants() {
+        JSONObject obj = new JSONObject();
+        assertTrue(apiClient.epayVariants(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.epayVariants(null));
+    }
+
+    @Test
+    public void epayPurchase() {
+        JSONObject obj = new JSONObject();
+        assertTrue(apiClient.epayPurchase(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.epayPurchase(null));
+    }
+
+    @Test
+    public void epayReversal() {
+        JSONObject obj = new JSONObject();
+        assertTrue(apiClient.epayReversal(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.epayReversal(null));
+    }
+
+    @Test
+    public void storeMerchantId() {
+        assertTrue(apiClient.storeMerchantId("MID-001"));
+        assertThrows(NullPointerException.class, () -> apiClient.storeMerchantId(null));
+    }
+
+    @Test
+    public void validateBarcode() {
+        JSONObject obj = new JSONObject();
+        assertTrue(apiClient.validateBarcode(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.validateBarcode(null));
+    }
+
+    @Test
+    public void getMerchantCredit() {
+        assertTrue(apiClient.getMerchantCredit());
+    }
+
+    @Test
+    public void getTransactionByNumber() {
+        JSONObject obj = new JSONObject();
+        assertTrue(apiClient.getTransactionByNumber(obj));
+        assertThrows(NullPointerException.class, () -> apiClient.getTransactionByNumber(null));
+    }
+
+    @Test
     public void decompressBytesRoundTrip() throws IOException {
         String original = "Hello Payzone Transaction Service";
         assertEquals(original, ApiClient.decompressBytes(buildCompressedBytes(original)));

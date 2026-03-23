@@ -25,10 +25,10 @@ internal class ServiceConnectionManager(
     val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     @Volatile var serviceBoundDeferred = CompletableDeferred<Unit>()
-    var mBound = false
-    var mService: Messenger? = null
-    var isKeyInserted = false
-    var isBoxConnected = false
+    @Volatile var mBound = false
+    @Volatile var mService: Messenger? = null
+    @Volatile var isKeyInserted = false
+    @Volatile var isBoxConnected = false
     private var receiversRegistered = false
 
     private val keyInsertedReceiver = object : BroadcastReceiver() {
@@ -68,6 +68,9 @@ internal class ServiceConnectionManager(
             mService = null
             mBound = false
             onBoundChanged(false)
+            serviceBoundDeferred.completeExceptionally(
+                IllegalStateException("Service disconnected unexpectedly")
+            )
             serviceBoundDeferred = CompletableDeferred()
         }
     }
@@ -85,7 +88,14 @@ internal class ServiceConnectionManager(
             )
         }
         val bindResult = appContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
-        Log.d(TAG, "Binding in progress: $bindResult")
+        if (!bindResult) {
+            Log.e(TAG, "bindService failed — Payzone service may not be installed")
+            serviceBoundDeferred.completeExceptionally(
+                IllegalStateException("bindService returned false — is the Payzone service installed?")
+            )
+        } else {
+            Log.d(TAG, "Binding in progress")
+        }
     }
 
     fun destroyService(): Boolean {
