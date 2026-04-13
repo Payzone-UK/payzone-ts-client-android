@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew test
 
       - name: Upload test report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: TestResults
           path: build/reports/tests/testDebugUnitTest/
@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew jacocoTestReport
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: CoverageReport
           path: build/reports/jacoco/jacocoTestReport/html/
@@ -50,7 +50,7 @@ jobs:
         run: ./gradlew lint
 
       - name: Upload lint report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: LintResult
           path: build/reports/lint-results*.html
@@ -86,13 +86,13 @@ jobs:
           echo "RELEASE_AAR=$(basename $(ls build/outputs/aar/*-release.aar))" >> $GITHUB_ENV
 
       - name: Upload debug AAR
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.DEBUG_AAR }}
           path: build/outputs/aar/${{ env.DEBUG_AAR }}
 
       - name: Upload release AAR
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.RELEASE_AAR }}
           path: build/outputs/aar/${{ env.RELEASE_AAR }}
