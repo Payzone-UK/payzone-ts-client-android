@@ -1,7 +1,7 @@
 # Transaction Service Client Architecture
 
 **Audience:** Payzone Transaction Service Client maintainers, reviewers, and engineers creating follow-on Jira stories.  
-**Source:** Distilled primarily from `AT150E - Transaction Services - SUMMARY V1 - 2026-02-02 - 70% - PROD READY WITH CAVEATS.md` and the repo-local `doc/analysis.md`.  
+**Source:** Distilled primarily from AT150E architecture findings (internal reference, not committed to this repository) and review of the current client source code in this repo.  
 **Scope:** Architecture and planning reference only. This document does not define a production-code change.
 
 ---
@@ -238,8 +238,7 @@ When creating or refining architecture stories, check that the story states:
 ---
 
 ## 9. Source References
-
-- Full AT150E analysis: `AT150E - Transaction Services - SUMMARY V1 - 2026-02-02 - 70% - PROD READY WITH CAVEATS.md`
+- AT150E analysis (internal document; not committed to this repository): `AT150E - Transaction Services - SUMMARY V1 - 2026-02-02 - 70% - PROD READY WITH CAVEATS.md`
 - Client facade: `src/main/java/com/payzone/transaction/client/ApiClient.kt`
 - Service binding and broadcasts: `src/main/java/com/payzone/transaction/client/ServiceConnectionManager.kt`
 - Message delivery: `src/main/java/com/payzone/transaction/client/MessageSender.kt`
